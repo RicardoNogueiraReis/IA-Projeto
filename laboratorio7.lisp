@@ -102,7 +102,7 @@
 
 ;; aux da incrementar-posicao
 (defun incrementar (posicao linhaTabuleiro)
-    (cond
+  (cond
     (
       (null linhaTabuleiro)
       nil
@@ -225,12 +225,39 @@
   (distribuir-pecas-aux n indiceLinha indiceColuna indiceLinha indiceColuna tabuleiro)
 )
 
-(defun operador (indiceLinha indiceColuna &optional (tabuleiro (tabuleiro-teste)))
+;; Função aux para operador
+(defun percorrer-posicoes (coordenadas tabuleiro)
+"coordenadas é uma lista de posições (linha coluna) a percorrer para incrementar o número de peças"
   (cond
-     ((or (null indiceLinha) (null indiceColuna)) nil)
-     (t
-       (incrementar
-         (distribuir-pecas (celula indiceLinha indiceColuna tabuleiro) indiceLinha indiceColuna tabuleiro) tabuleiro))
+    ((null tabuleiro) nil)
+    ((null coordenadas) tabuleiro)
+      (t 
+      (let
+        (
+          (novo-tabuleiro (incrementar-posicao (first (car coordenadas)) (second (car coordenadas)) tabuleiro))
+        )
+          (cond
+            ( (and
+                (= (length coordenadas) 1)
+                (or
+                  (= (celula (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro) 1) 
+                  (= (celula (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro) 3)
+                  (= (celula (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro) 5)
+                )
+              )
+              (substituir (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro)
+            )
+              (t (percorrer-posicoes (cdr coordenadas) novo-tabuleiro))
+          )
+      )
+     )
   )
 )
 
+
+(defun operador (indiceLinha indiceColuna &optional (tabuleiro (tabuleiro-teste)))
+  (cond
+    ((or (null indiceLinha) (null indiceColuna)) nil)
+    (t (percorrer-posicoes (distribuir-pecas (celula indiceLinha indiceColuna tabuleiro) indiceLinha indiceColuna tabuleiro) (substituir indiceLinha indiceColuna tabuleiro 0)))
+  )
+)

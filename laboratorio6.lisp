@@ -87,7 +87,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado
 ;;; variaveis de teste e operadores
 (defun no-teste ()
 "Define um no teste do problema da vasilhas em que A=2, B=2, profundidade=0 e pai=NIL"
- (list '(2 5) 0 nil))
+ (list '(2 2) 0 nil))
 
 (defun operadores ()
  "Cria uma lista com todos os operadores do problema das vasilhas."
@@ -241,12 +241,8 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado
   (cond
    (
     (or
-      (and
-        (= (vasilha-a-conteudo no) 1)
-      )
-      (and
-        (= (vasilha-b-conteudo no) 1)
-      )
+      (= (vasilha-a-conteudo no) 1)
+      (= (vasilha-b-conteudo no) 1)
     )
     t
 
@@ -257,6 +253,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado
    )
   )
 )
+
 
 (no-solucaop '((1 2) 0 nil))
 
@@ -314,11 +311,11 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado
 
 ;; Fun��es Auxiliares ao BFS
 
-(defun abertos-bfs (abertos nos-sucessores)
+(defun abertos-bfs (abertos nos-sucessores fechados)
   (append abertos nos-sucessores)
 )
 
-(defun abertos-dfs (abertos nos-sucessores)
+(defun abertos-dfs (abertos nos-sucessores fechados)
   (append nos-sucessores abertos)
 )
 
@@ -358,10 +355,10 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado
 
 ;;; Algoritmos
 ;; procura na largura
-;; teste: (bfs (no-teste) 'no-solucaop 'sucessores (operadores) (list (no-teste)) nil)
+;; teste: (bfs 'no-solucaop 'sucessores (operadores) (list (no-teste)) nil)
 ;; resultado: ((3 1) 1 ((2 2) 0 NIL))
 
-(defun bfs (no funcaoObjetivo funcaoSucessores operadores &optional (abertos nil) (fechados nil))
+(defun bfs (funcaoObjetivo funcaoSucessores operadores &optional (abertos nil) (fechados nil))
   (cond
      ((null abertos) nil)
      (t
@@ -390,7 +387,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado
           )
           (
             t
-            (bfs (car abertos) funcaoObjetivo funcaoSucessores operadores novos-abertos novos-fechados)
+            (bfs funcaoObjetivo funcaoSucessores operadores novos-abertos novos-fechados)
           )
         )
        )
@@ -399,8 +396,47 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado
 )
 
 
-
-
 ;; procura na profundidade
-;; teste: (dfs (no-teste) 'no-solucaop 'sucessores (operadores) 10)
+;; teste: (dfs 'no-solucaop 'sucessores (operadores) 10 (list (no-teste)))
 ;; resultado: ((3 1) 1 ((2 2) 0 NIL))
+
+(defun dfs (funcaoObjetivo funcaoSucessores operadores profundidadeMax &optional (abertos nil) (fechados nil))
+  (cond
+     (
+       (null abertos)
+       nil
+     )
+     (t
+       (let*
+        (
+          (n (car abertos))
+
+           ; Expande o n� n Colocar os sucessores no fim de ABERTOS, 
+           ; colocando os ponteiros para n. (novo-sucessor)
+          (nos-sucessores (funcall funcaoSucessores n operadores "dfs" profundidadeMax))
+
+          ;; (a (print nos-sucessores))
+           ; Remove o primeiro n� n de ABERTOS e coloca os sucessores no fim da lista de abertos
+          (novos-abertos (abertos-dfs (cdr abertos) nos-sucessores))
+
+           ; e coloca-o em FECHADOS
+          (novos-fechados (cons n fechados))
+
+           ; verifica se existe um n� objetivo
+          (no-objetivo (retorna-no-objetivo nos-sucessores funcaoObjetivo))
+        )
+        (cond
+          (
+            (not (equal no-objetivo nil))
+            no-objetivo
+          )
+          (
+            t
+            (dfs funcaoObjetivo funcaoSucessores operadores profundidadeMax novos-abertos novos-fechados)
+          )
+        )
+       )
+     )
+  )
+
+)
