@@ -312,11 +312,49 @@ A funÃ¯Â¿Â½Ã¯Â¿Â½o verifica que os valores lidos pertencem ao intervale esperado
 ;; Funções Auxiliares ao BFS
 
 (defun abertos-bfs (abertos nos-sucessores fechados)
-  (append abertos nos-sucessores)
+"Função responsável por adicionar nos sucessores na lista de abertos de acordo com o algoritmo de procura em largura.
+Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
+  (cond
+     ( (null nos-sucessores) nil)
+     (
+        (and
+          (null (no-existe-p (car nos-sucessores) abertos "bfs"))
+          (null (no-existe-p (car nos-sucessores) fechados "bfs"))
+        )
+        (append
+          (append abertos (list (car nos-sucessores)))
+          (abertos-bfs
+            (append abertos (list (car nos-sucessores)))
+            (cdr nos-sucessores)
+            fechados
+          )
+        )
+     )
+     (t (abertos-bfs abertos (cdr nos-sucessores) fechados))
+   )
 )
 
 (defun abertos-dfs (abertos nos-sucessores fechados)
-  (append nos-sucessores abertos)
+"Função responsável por adicionar nos sucessores na lista de abertos de acordo com o algoritmo de procura em profundidade.
+Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
+  (cond
+    ( (null nos-sucessores) nil)
+      (
+        (and
+          (null (no-existe-p (car nos-sucessores) abertos "dfs"))
+          (null (no-existe-p (car nos-sucessores) fechados "dfs"))
+        )
+        (append
+          (append (list (car nos-sucessores)) abertos)
+          (abertos-dfs
+            (append (list (car nos-sucessores)) abertos)
+            (cdr nos-sucessores)
+            fechados
+          )
+        )
+      )
+     (t (abertos-dfs abertos (cdr nos-sucessores) fechados))
+   )
 )
 
 (defun no-existe-p (no lista-nos algoritmo)
@@ -343,7 +381,7 @@ A funÃ¯Â¿Â½Ã¯Â¿Â½o verifica que os valores lidos pertencem ao intervale esperado
    ( (null lista-sucessores)
      nil
    )
-   ( (equal (funcall funcaoObjetivo (car lista-sucessores)) nil)
+   ( (null (funcall funcaoObjetivo (car lista-sucessores)))
      (retorna-no-objetivo (cdr lista-sucessores) funcaoObjetivo)
    )
    ( t
@@ -368,11 +406,11 @@ A funÃ¯Â¿Â½Ã¯Â¿Â½o verifica que os valores lidos pertencem ao intervale esperado
 
            ; Expande o nó n Colocar os sucessores no fim de ABERTOS, 
            ; colocando os ponteiros para n. (novo-sucessor)
-          (nos-sucessores (funcall funcaoSucessores n operadores "bfs"))
+          (nos-sucessores (remove nil (funcall funcaoSucessores n operadores "bfs")) )
 
           ;; (a (print nos-sucessores))
            ; Remove o primeiro nó n de ABERTOS e coloca os sucessores no fim da lista de abertos
-          (novos-abertos (abertos-bfs (cdr abertos) nos-sucessores))
+          (novos-abertos (remove nil (abertos-bfs (cdr abertos) nos-sucessores fechados)))
 
            ; e coloca-o em FECHADOS
           (novos-fechados (cons n fechados))
@@ -413,11 +451,11 @@ A funÃ¯Â¿Â½Ã¯Â¿Â½o verifica que os valores lidos pertencem ao intervale esperado
 
            ; Expande o nó n Colocar os sucessores no fim de ABERTOS, 
            ; colocando os ponteiros para n. (novo-sucessor)
-          (nos-sucessores (funcall funcaoSucessores n operadores "dfs" profundidadeMax))
+          (nos-sucessores (remove nil (funcall funcaoSucessores n operadores "dfs" profundidadeMax)))
 
           ;; (a (print nos-sucessores))
            ; Remove o primeiro nó n de ABERTOS e coloca os sucessores no fim da lista de abertos
-          (novos-abertos (abertos-dfs (cdr abertos) nos-sucessores))
+          (novos-abertos (remove nil (abertos-dfs (cdr abertos) nos-sucessores fechados)))
 
            ; e coloca-o em FECHADOS
           (novos-fechados (cons n fechados))
@@ -440,3 +478,4 @@ A funÃ¯Â¿Â½Ã¯Â¿Â½o verifica que os valores lidos pertencem ao intervale esperado
   )
 
 )
+
