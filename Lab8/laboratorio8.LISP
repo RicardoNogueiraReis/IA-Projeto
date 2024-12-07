@@ -88,8 +88,15 @@
 
 (defun escreve-lista-nos (lista)
   "Escreve no terminal uma lista de nós."
-  (dolist (no lista)
-    (escreve-no no))
+  (cond
+    ( (null lista)
+      nil
+    )
+    ( t
+      (escreve-no (car lista))
+      (escreve-lista-nos (cdr lista))
+    )
+  )
 )
 
 ;; Teste no Listener
@@ -111,6 +118,58 @@
                         (cria-no '(0 1) 1 1)) )
      )
   ( escreve-lista-nos (colocar-sucessores-em-abertos abertos sucessores) )
+)
+
+
+;; VASILHAS (LAB6)
+(defun operadores ()
+  "Cria uma lista com todos os operadores do problema das vasilhas."
+  (list 'vazar-a 'vazar-b 'encher-a 'encher-b 'transferir-a-b 'transferir-b-a)
+)
+
+(defun vazar-a (no-estado)
+  "Esvazia completamente a vasilha A."
+  (list 0 (second no-estado))
+)
+
+(defun vazar-b (no-estado)
+  "Esvazia completamente a vasilha B."
+  (list (first no-estado) 0)
+)
+
+(defun encher-a (no-estado)
+  "Enche completamente a vasilha A, até 3 litros."
+  (if (= (first no-estado) 3)
+      nil
+      (list 3 (second no-estado))
+  )
+)
+
+(defun encher-b (no-estado)
+  "Enche completamente a vasilha B, até 5 litros."
+  (if (= (second no-estado) 5)
+      nil
+      (list (first no-estado) 5)
+  )
+)
+
+(defun transferir-a-b (no-estado)
+  "Transfere o máximo possível de água da vasilha A para a vasilha B."
+  (let* ((valor-a (first no-estado))
+         (valor-b (second no-estado))
+         (espaco-disponivel-b (- 5 valor-b))
+         (transferir (min valor-a espaco-disponivel-b)))
+    ( list (- valor-a transferir) (+ valor-b transferir) )
+  )
+)
+
+(defun transferir-b-a (no-estado)
+  "Transfere o máximo possível de água da vasilha B para a vasilha A."
+  (let* ( (valor-a (first no-estado) )
+         ( valor-b (second no-estado) )
+         ( espaco-disponivel-a (- 3 valor-a) )
+         ( transferir (min valor-b espaco-disponivel-a)) )
+    ( list (+ valor-a transferir) (- valor-b transferir)) )
 )
 
 ;; Implementação do algoritmo A*
@@ -141,13 +200,22 @@
    )
 )
 
+(defun mostrar-solucao (no)
+  "Exibe o caminho do estado inicial até o estado final."
+  (when no
+    ( mostrar-solucao (no-pai no) ) ;; Chamada recursiva para o nó pai
+    (escreve-no no) ;; Escreve o nó atual
+  )
+)
+
+
 (defun a* (abertos fechados funcao-objetivo funcao-sucessores operadores funcao-heuristica nos-gerados nos-expandidos)
   "Algoritmo A* implementado de forma recursiva."
   (cond
     ;; Caso base: lista de abertos vazia, falha.
-    ((null abertos)
+    ( (null abertos)
      (format t "Falha: solução não encontrada.~%")
-     nil)
+     nil) 
 
     ;; Verifica o primeiro nó em abertos.
     (t
@@ -166,7 +234,7 @@
 
        ;; Atualiza contadores.
        (incf nos-expandidos)
-       (incf nos-gerados (length nos-sucessores))
+       ( incf nos-gerados (length nos-sucessores) )
 
        ;; Verifica se há um nó objetivo nos sucessores.
        (let ((objetivo (find-if funcao-objetivo nos-sucessores)))
@@ -187,6 +255,36 @@
             operadores
             funcao-heuristica
             nos-gerados
-            nos-expandidos)))))))
+            nos-expandidos) )
+       )
+     )
+    )
+  )
+)
+
 
 ;; Teste no Listener
+(let ((no-inicial (cria-no '(2 2) 0 (heuristica '(2 2)))))
+  (a* (list no-inicial) ;; Lista inicial de abertos com o nó inicial
+      nil               ;; Lista de fechados inicial vazia
+      #'no-solucaop     ;; Função objetivo
+      #'sucessores      ;; Função sucessores
+      (operadores)      ;; Lista de operadores
+      #'heuristica      ;; Função heurística
+      0                 ;; Contador de nós gerados
+      0))               ;; Contador de nós expandidos
+
+;; Teste no Listener com o caminho da solução
+(let ((resultado (a* (list (cria-no '(2 2) 0 (heuristica '(2 2))))
+                     nil
+                     #'no-solucaop
+                     #'sucessores
+                     (operadores)
+                     #'heuristica
+                     0
+                     0)))
+  (when resultado
+    (let ((solucao (getf resultado :solucao)))
+      (format t "Caminho da solução:~%")
+      (mostrar-solucao solucao))))
+
