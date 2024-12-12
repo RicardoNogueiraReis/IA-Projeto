@@ -10,8 +10,8 @@
          (algoritmo (ler-algoritmo))
          (profundidade (cond ((eql algoritmo 'dfs) (ler-profundidade)) (T 9999))) )
 	(cond
-		((equal algoritmo 'bfs) (escreve-no (funcall algoritmo no 'no-solucaop 'sucessores (operadores))))
-		((equal algoritmo 'dfs) (escreve-no (funcall algoritmo no 'no-solucaop 'sucessores (operadores) profundidade)))
+		((equal algoritmo 'bfs) (escreve-no (funcall algoritmo 'no-solucaop 'sucessores (operadores))))
+		((equal algoritmo 'dfs) (escreve-no (funcall algoritmo 'no-solucaop 'sucessores (operadores) profundidade)))
 	)
   )
 )
@@ -87,7 +87,7 @@ A funÃ¯Â¿Â½Ã¯Â¿Â½o verifica que os valores lidos pertencem ao intervale esperado
 ;;; variaveis de teste e operadores
 (defun no-teste ()
 "Define um no teste do problema da vasilhas em que A=2, B=2, profundidade=0 e pai=NIL"
- (list '(2 2) 0 nil))
+ (list '(2 3) 0 nil))
 
 (defun operadores ()
  "Cria uma lista com todos os operadores do problema das vasilhas."
@@ -315,47 +315,43 @@ A funÃ¯Â¿Â½Ã¯Â¿Â½o verifica que os valores lidos pertencem ao intervale esperado
 "Função responsável por adicionar nos sucessores na lista de abertos de acordo com o algoritmo de procura em largura.
 Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
   (cond
-     ( (null nos-sucessores) nil)
+     ( (null nos-sucessores) abertos)
      (
-        (and
-          (null (no-existe-p (car nos-sucessores) abertos "bfs"))
-          (null (no-existe-p (car nos-sucessores) fechados "bfs"))
-        )
-        (append
-          (append abertos (list (car nos-sucessores)))
-          (abertos-bfs
-            (append abertos (list (car nos-sucessores)))
-            (cdr nos-sucessores)
-            fechados
-          )
-        )
+       (and
+         (null (no-existe-p (car nos-sucessores) abertos "bfs"))
+         (null (no-existe-p (car nos-sucessores) fechados "bfs"))
+       )
+       (abertos-bfs
+         (append abertos (list (car nos-sucessores)))
+         (cdr nos-sucessores)
+         fechados
+       )
+      
      )
      (t (abertos-bfs abertos (cdr nos-sucessores) fechados))
    )
 )
 
 (defun abertos-dfs (abertos nos-sucessores fechados)
-"Função responsável por adicionar nos sucessores na lista de abertos de acordo com o algoritmo de procura em profundidade.
-Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
+  "Função responsável por adicionar nos sucessores na lista de abertos de acordo com o algoritmo de procura em profundidade.
+  Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
   (cond
-    ( (null nos-sucessores) nil)
-      (
-        (and
-          (null (no-existe-p (car nos-sucessores) abertos "dfs"))
-          (null (no-existe-p (car nos-sucessores) fechados "dfs"))
-        )
-        (append
-          (append (list (car nos-sucessores)) abertos)
-          (abertos-dfs
-            (append (list (car nos-sucessores)) abertos)
-            (cdr nos-sucessores)
-            fechados
-          )
-        )
+    ( (null nos-sucessores) abertos)
+    (
+      (and
+        (null (no-existe-p (car nos-sucessores) abertos "dfs"))
+        (null (no-existe-p (car nos-sucessores) fechados "dfs"))
       )
-     (t (abertos-dfs abertos (cdr nos-sucessores) fechados))
-   )
+      (abertos-dfs
+        (append (list (car nos-sucessores)) abertos)
+        (cdr nos-sucessores)
+        fechados
+      )
+    )
+    (t (abertos-dfs abertos (cdr nos-sucessores) fechados))
+  )
 )
+
 
 (defun no-existe-p (no lista-nos algoritmo)
   (cond
@@ -398,7 +394,10 @@ Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
 
 (defun bfs (funcaoObjetivo funcaoSucessores operadores &optional (abertos nil) (fechados nil))
   (cond
-     ((null abertos) nil)
+     (
+       (null abertos)
+       nil
+     )
      (t
        (let*
         (
@@ -420,7 +419,7 @@ Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
         )
         (cond
           (
-            (not (equal no-objetivo nil))
+            (not (null no-objetivo))
             no-objetivo
           )
           (
@@ -453,7 +452,7 @@ Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
            ; colocando os ponteiros para n. (novo-sucessor)
           (nos-sucessores (remove nil (funcall funcaoSucessores n operadores "dfs" profundidadeMax)))
 
-          ;; (a (print nos-sucessores))
+           ;; (a (print nos-sucessores))
            ; Remove o primeiro nó n de ABERTOS e coloca os sucessores no fim da lista de abertos
           (novos-abertos (remove nil (abertos-dfs (cdr abertos) nos-sucessores fechados)))
 
@@ -465,7 +464,7 @@ Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
         )
         (cond
           (
-            (not (equal no-objetivo nil))
+            (not (null no-objetivo))
             no-objetivo
           )
           (
