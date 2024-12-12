@@ -317,15 +317,15 @@ Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
   (cond
      ( (null nos-sucessores) abertos)
      (
-        (and
-          (null (no-existe-p (car nos-sucessores) abertos "bfs"))
-          (null (no-existe-p (car nos-sucessores) fechados "bfs"))
-        )
-          (abertos-bfs
-            (append abertos (list (car nos-sucessores)))
-            (cdr nos-sucessores)
-            fechados
-          )
+       (and
+         (null (no-existe-p (car nos-sucessores) abertos "bfs"))
+         (null (no-existe-p (car nos-sucessores) fechados "bfs"))
+       )
+       (abertos-bfs
+         (append abertos (list (car nos-sucessores)))
+         (cdr nos-sucessores)
+         fechados
+       )
       
      )
      (t (abertos-bfs abertos (cdr nos-sucessores) fechados))
@@ -336,16 +336,21 @@ Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
   "Função responsável por adicionar nos sucessores na lista de abertos de acordo com o algoritmo de procura em profundidade.
   Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
   (cond
-    ((null nos-sucessores) abertos)
-    ((and
-      (null (no-existe-p (car nos-sucessores) abertos "dfs"))
-      (null (no-existe-p (car nos-sucessores) fechados "dfs")))
-     (abertos-dfs
-      (append (list (car nos-sucessores)) abertos)
-      (cdr nos-sucessores)
-      fechados))
-    (t
-     (abertos-dfs abertos (cdr nos-sucessores) fechados))))
+    ( (null nos-sucessores) abertos)
+    (
+      (and
+        (null (no-existe-p (car nos-sucessores) abertos "dfs"))
+        (null (no-existe-p (car nos-sucessores) fechados "dfs"))
+      )
+      (abertos-dfs
+        (append (list (car nos-sucessores)) abertos)
+        (cdr nos-sucessores)
+        fechados
+      )
+    )
+    (t (abertos-dfs abertos (cdr nos-sucessores) fechados))
+  )
+)
 
 
 (defun no-existe-p (no lista-nos algoritmo)
@@ -389,7 +394,10 @@ Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
 
 (defun bfs (funcaoObjetivo funcaoSucessores operadores &optional (abertos nil) (fechados nil))
   (cond
-     ((null abertos) nil)
+     (
+       (null abertos)
+       nil
+     )
      (t
        (let*
         (
@@ -411,7 +419,7 @@ Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
         )
         (cond
           (
-            (not (equal no-objetivo nil))
+            (not (null no-objetivo))
             no-objetivo
           )
           (
@@ -456,7 +464,7 @@ Verifica se já existe um dos nós na lista de abertos e na lista de fechados."
         )
         (cond
           (
-            (not (equal no-objetivo nil))
+            (not (null no-objetivo))
             no-objetivo
           )
           (

@@ -10,8 +10,8 @@
          (algoritmo (ler-algoritmo))
          (profundidade (cond ((eql algoritmo 'dfs) (ler-profundidade)) (T 9999))) )
 	(cond
-		((equal algoritmo 'bfs) (escreve-no (funcall algoritmo 'no-solucaop 'sucessores (operadores))))
-		((equal algoritmo 'dfs) (escreve-no (funcall algoritmo 'no-solucaop 'sucessores (operadores) profundidade)))
+		((equal algoritmo 'bfs) (escreve-no (funcall algoritmo 'no-solucaop 'sucessores (operadores) (list no) nil)))
+		((equal algoritmo 'dfs) (escreve-no (funcall algoritmo 'no-solucaop 'sucessores (operadores) profundidade (list no) nil)))
 	)
   )
 )
@@ -87,7 +87,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado
 ;;; variaveis de teste e operadores
 (defun no-teste ()
 "Define um no teste do problema da vasilhas em que A=2, B=2, profundidade=0 e pai=NIL"
- (list '(2 3) 0 nil))
+ (list '(2 2) 0 nil))
 
 (defun operadores ()
  "Cria uma lista com todos os operadores do problema das vasilhas."
@@ -148,14 +148,21 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado
 ;; resultado: (0 2)
 
 (defun vazar-a (no-estado)
-  (list 0 (second no-estado))
+  (cond
+     ((or (null no-estado)(= (first no-estado) 0)) nil)
+     (t (list 0 (second no-estado)))
+   )
 )
+
 
 ;; teste: (vazar-b (no-estado (no-teste)))
 ;; resultado: (2 0)
 
 (defun vazar-b (no-estado)
-  (list (first no-estado) 0)
+  (cond
+     ((or (null no-estado) (= (second no-estado) 0)) nil)
+     (t (list (first no-estado) 0))
+   )
 )
 
 ;; teste: (encher-a (no-estado (no-teste)))

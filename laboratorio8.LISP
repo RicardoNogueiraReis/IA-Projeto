@@ -92,9 +92,6 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 
 ;;; Problema das vasilhas
 ;;; variaveis de teste e operadores
-(defun no-teste-vazilhas ()
-"Define um no teste do problema da vasilhas em que A=2, B=2, profundidade=0 e pai=NIL"
- (list '(2 2) 0 nil))
 
 (defun operadores ()
  "Cria uma lista com todos os operadores do problema das vasilhas."
@@ -102,7 +99,6 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 
 (defun vazar-a (no-estado)
   "Esvazia completamente a vasilha A."
-  (print no-estado)
   (list 0 (second no-estado))
 )
 
@@ -167,7 +163,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 
 (defun no-teste-vasilhas ()
 "Define um no teste do problema da vasilhas em que A=2, B=2, profundidade=0 e pai=NIL"
- (cria-no '(2 2) 0 (heuristica '(2 2)))
+   (cria-no '(2 0) 0 (heuristica '(2 0)))
 )
 
 ;;; Funções Seletores
@@ -295,7 +291,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
     (lambda (operador)
       (let
         (
-          (novo-estado (funcall operador (no-estado no)))
+          (novo-estado (funcall operador no))
         )
         (cond
           ( (not (null novo-estado))
@@ -358,12 +354,13 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
       (let*
         (
           (n (car abertos) )
-          (nos-sucessores (funcall funcao-sucessores n operadores funcao-heuristica))
-          (novos-abertos (cdr abertos)) ;; resto-abertos
+          (nos-sucessores (remove nil (funcall funcao-sucessores n operadores funcao-heuristica)))
+          (novos-abertos (remove nil (cdr abertos)))
+          (novos-fechados (cons n fechados))
           (nos-filtrados
               ;; Remove sucessores redundantes.
               (remove-if
-                #'(lambda (sucessor) (no-redundante-p sucessor fechados))
+                #'(lambda (sucessor) (no-redundante-p sucessor novos-fechados))
                 nos-sucessores
               )
           )
