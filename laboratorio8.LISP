@@ -1,7 +1,7 @@
-;;; Inicializaï¿½ï¿½o do programa
+;;; InicializaÃ¯Â¿Â½Ã¯Â¿Â½o do programa
 ;; iniciar
 (defun iniciar ()
-"Permite iniciar o programa, fazendo a leitura do teclado do estado inicial e do algoritmo a utilizar para procurar a soluï¿½ï¿½o (neste caso a procura na profundidade ou na largura)"
+"Permite iniciar o programa, fazendo a leitura do teclado do estado inicial e do algoritmo a utilizar para procurar a soluÃ¯Â¿Â½Ã¯Â¿Â½o (neste caso a procura na profundidade ou na largura)"
   (let* ((no (cria-no (ler-vasilhas)))
          (algoritmo (ler-algoritmo))
          (profundidade (cond ((eql algoritmo 'dfs) (ler-profundidade)) (T 9999))) )
@@ -25,7 +25,7 @@
 
 (defun ler-vasilha (vasilha)
 "Permite ler do teclado o valor inicial de uma vasilha.
-A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para cada vasilha."
+A funÃ¯Â¿Â½Ã¯Â¿Â½o verifica que os valores lidos pertencem ao intervale esperado para cada vasilha."
 (progn
     (format t "Insere o valor da vasilha ~A ~%" vasilha)
     (let ((valor (read)))
@@ -66,8 +66,8 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 
  
 (defun escreve-no (no)
-  "Escreve no terminal o estado, profundidade, heurística e custo do nó."
-  (format t "| Estado: ~a | Profundidade: ~a | Heurística: ~a | Custo: ~a | Pai: ~a~%"
+  "Escreve no terminal o estado, profundidade, heurÃ­stica e custo do nÃ³."
+  (format t "| Estado: ~a | Profundidade: ~a | HeurÃ­stica: ~a | Custo: ~a | Pai: ~a~%"
           (no-estado no)
           (no-profundidade no)
           (no-heuristica no)
@@ -77,7 +77,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 )
 
 (defun escreve-lista-nos (lista)
-  "Escreve no terminal uma lista de nós."
+  "Escreve no terminal uma lista de nÃ³s."
   (cond
     ( (null lista)
       nil
@@ -108,7 +108,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 )
 
 (defun encher-a (no-estado)
-  "Enche completamente a vasilha A, até 3 litros."
+  "Enche completamente a vasilha A, atÃ© 3 litros."
   (if (= (first no-estado) 3)
       nil
       (list 3 (second no-estado))
@@ -116,7 +116,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 )
 
 (defun encher-b (no-estado)
-  "Enche completamente a vasilha B, até 5 litros."
+  "Enche completamente a vasilha B, atÃ© 5 litros."
   (cond
     ( (= (second no-estado) 5)
       nil
@@ -128,7 +128,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 )
 
 (defun transferir-a-b (no-estado)
-  "Transfere o máximo possível de água da vasilha A para a vasilha B."
+  "Transfere o mÃ¡ximo possÃ­vel de Ã¡gua da vasilha A para a vasilha B."
   (let*
     (
       (valor-a (first no-estado))
@@ -141,7 +141,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 )
 
 (defun transferir-b-a (no-estado)
-  "Transfere o máximo possível de água da vasilha B para a vasilha A."
+  "Transfere o mÃ¡ximo possÃ­vel de Ã¡gua da vasilha B para a vasilha A."
   (let*
     (
       ( valor-a (first no-estado) )
@@ -157,7 +157,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 
 ;;; Construtor
 (defun cria-no (vasilhas &optional (g 0) (heuristica 0) (pai nil))
-  "Cria um nó com estado do vasilhas, profundidade (g), heurística e ponteiro para o nó pai."
+  "Cria um nÃ³ com estado do vasilhas, profundidade (g), heurÃ­stica e ponteiro para o nÃ³ pai."
   (list vasilhas g heuristica pai)
 )
 
@@ -166,40 +166,40 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
    (cria-no '(2 0) 0 (heuristica '(2 0)))
 )
 
-;;; Funções Seletores
+;;; FunÃ§Ãµes Seletores
 (defun no-estado (no)
-  "Retorna o estado do nó (tabuleiro)."
+  "Retorna o estado do nÃ³ (tabuleiro)."
   (first no)
 )
 
 (defun no-profundidade (no)
-  "Retorna a profundidade do nó (g)."
+  "Retorna a profundidade do nÃ³ (g)."
   (second no)
 )
 
 (defun no-heuristica (no)
-  "Retorna o valor da heurística do nó."
+  "Retorna o valor da heurÃ­stica do nÃ³."
   (third no)
 )
 
 (defun no-custo (no)
-  "Calcula o custo do nó (profundidade + heurística)."
+  "Calcula o custo do nÃ³ (profundidade + heurÃ­stica)."
   (+ (no-profundidade no) (no-heuristica no))
 )
 
 (defun no-pai (no)
-  "Retorna o nó pai."
+  "Retorna o nÃ³ pai."
   (fourth no)
 )
 
-#| Funções com dados testes. |#
+#| FunÃ§Ãµes com dados testes. |#
 
 ;; Teste no Listener
 #|
 (let ( (no (cria-no '(2 2) 3 2 nil)) )
   (format t "Estado: ~a~%" (no-estado no))
   (format t "Profundidade: ~a~%" (no-profundidade no))
-  (format t "Heurística: ~a~%" (no-heuristica no))
+  (format t "HeurÃ­stica: ~a~%" (no-heuristica no))
   (format t "Custo: ~a~%" (no-custo no))
 )
 
@@ -208,7 +208,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun heuristica (estado)
-  "Calcula o valor da heurística com base no estado das vasilhas."
+  "Calcula o valor da heurÃ­stica com base no estado das vasilhas."
   (let ((va (first estado))
         (vb (second estado)))
     (cond
@@ -220,7 +220,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 )
 
 (defun novo-sucessor (no operador)
-  "Gera um novo sucessor com a heurística calculada."
+  "Gera um novo sucessor com a heurÃ­stica calculada."
   (let ( (novo-estado (funcall operador (no-estado no))) )
     (when novo-estado
       (cria-no novo-estado
@@ -233,13 +233,13 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 
 #|
 ;; Teste no Listener
-(format t "Heurística de (1 3): ~a~%" (heuristica '(1 3))) ; Resultado esperado: 0
-(format t "Heurística de (2 2): ~a~%" (heuristica '(2 2))) ; Resultado esperado: 1
-(format t "Heurística de (3 4): ~a~%" (heuristica '(3 4))) ; Resultado esperado: 2
+(format t "HeurÃ­stica de (1 3): ~a~%" (heuristica '(1 3))) ; Resultado esperado: 0
+(format t "HeurÃ­stica de (2 2): ~a~%" (heuristica '(2 2))) ; Resultado esperado: 1
+(format t "HeurÃ­stica de (3 4): ~a~%" (heuristica '(3 4))) ; Resultado esperado: 2
 |#
 
 (defun ordenar-nos (lista-nos)
-  "Ordena uma lista de nós pelo custo (profundidade + heurística)."
+  "Ordena uma lista de nÃ³s pelo custo (profundidade + heurÃ­stica)."
   (sort lista-nos #'(lambda (n1 n2)
                       ( < (no-custo n1) (no-custo n2)) )
   )
@@ -271,9 +271,9 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 |#
 
 
-;; Implementação do algoritmo A*
+;; ImplementaÃ§Ã£o do algoritmo A*
 (defun no-solucaop (no)
-  "Verifica se o estado do nó é uma solução."
+  "Verifica se o estado do nÃ³ Ã© uma soluÃ§Ã£o."
   (let
     (
       (estado (no-estado no))
@@ -284,21 +284,23 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 )
 
 (defun sucessores-heuristica (no operadores funcao-heuristica)
-  "Gera a lista de sucessores para um nó, aplicando corretamente a heurística e gravando a referência ao nó pai."
+  "Gera a lista de sucessores para um nÃ³, aplicando corretamente a heurÃ­stica e gravando a referÃªncia ao nÃ³ pai."
   (cond
     ((null operadores) nil)
     (t
      (let ((novo-estado (funcall (car operadores) (no-estado no))))
        (if novo-estado
-           ;; Cria o nó sucessor com heurística e pai
+           ;; Cria o nÃ³ sucessor com heurÃ­stica e pai
            (cons
             (cria-no
              novo-estado
              (1+ (no-profundidade no))
              (funcall funcao-heuristica novo-estado)
-             no) ;; Referência ao nó pai
+
+             no) ;; ReferÃªncia ao nÃ³ pai
             (sucessores-heuristica no (cdr operadores) funcao-heuristica))
-           ;; Continua com o próximo operador
+           ;; Continua com o prÃ³ximo operador
+
            (sucessores-heuristica no (cdr operadores) funcao-heuristica))
        )
     )
@@ -324,22 +326,22 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 
 )
 
-(defun no-redundante-p (sucessor fechados)
-  "Verifica se o sucessor já existe nos fechados e verifica se ."
+(defun no-redundante-p (sucessor lista)
+  "Verifica se o sucessor jÃ¡ existe na lista de abertos/fechados."
   (cond
-    ( (null fechados) nil)
+    ( (null lista) nil)
     ( (and
-        (equal (no-estado sucessor) (no-estado (car fechados)))
-        (<= (no-custo (car fechados)) (no-custo sucessor))
+        (equal (no-estado sucessor) (no-estado (car lista)))
+        (<= (no-custo (car lista)) (no-custo sucessor))
       )
       t
     )
-    (t (no-redundante-p sucessor (cdr fechados)))
+    (t (no-redundante-p sucessor (cdr lista)))
   )
 )
 
 (defun a* (abertos fechados funcaoObjetivo funcao-sucessores operadores funcao-heuristica &optional (nos-gerados 0) (nos-expandidos 0))
-  "Algoritmo A* implementado de forma recursiva, garantindo a gravação da heurística e do pai."
+  "Algoritmo A* implementado de forma recursiva, garantindo a gravaÃ§Ã£o da heurÃ­stica e do pai."
   (cond
     ;; Caso base: lista de abertos vazia
     ((null abertos) nil)
@@ -391,7 +393,7 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
 #|
 ;; Função alterada por causa do lab9
 (defun mostrar-solucao (no)
-  "Exibe o caminho do estado inicial até o estado final."
+  "Exibe o caminho do estado inicial atÃ© o estado final."
   (cond
     ( (null no) nil)
     (t
@@ -581,3 +583,19 @@ A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para 
     )
   )
 )
+
+;; Teste no Listener
+#|
+  (mostrar-solucao-antigo
+    (a* 
+      (no-teste-vasilhas)
+      nil
+      #'no-solucaop
+      #'sucessores-heuristica
+      (operadores)
+      #'heuristica
+      0
+      0
+    )
+  )
+|#
