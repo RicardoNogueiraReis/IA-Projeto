@@ -1,0 +1,554 @@
+;;; Inicializaï¿½ï¿½o do programa
+;; iniciar
+(defun iniciar ()
+"Permite iniciar o programa, fazendo a leitura do teclado do estado inicial e do algoritmo a utilizar para procurar a soluï¿½ï¿½o (neste caso a procura na profundidade ou na largura)"
+  (let* ((no (cria-no (ler-vasilhas)))
+         (algoritmo (ler-algoritmo))
+         (profundidade (cond ((eql algoritmo 'dfs) (ler-profundidade)) (T 9999))) )
+	(cond
+		((equal algoritmo 'bfs) (escreve-no (funcall algoritmo no 'no-solucaop 'sucessores (operadores))))
+		((equal algoritmo 'dfs) (escreve-no (funcall algoritmo no 'no-solucaop 'sucessores (operadores) profundidade)))
+	)
+  )
+)
+
+;;; Input - interface que permite ler os valores iniciais das vasilhas junto do utilizador.
+(defun ler-no-inicial (&optional (f t))
+  (read f))
+
+(defun ler-vasilhas ()
+"Permite ler do teclado o estado inicial do problema das vasilhas."
+  (let ((vasilha-a (ler-vasilha "A")) (vasilha-b (ler-vasilha "B")))
+    (list vasilha-a vasilha-b)
+    )
+)
+
+(defun ler-vasilha (vasilha)
+"Permite ler do teclado o valor inicial de uma vasilha.
+A funï¿½ï¿½o verifica que os valores lidos pertencem ao intervale esperado para cada vasilha."
+(progn
+    (format t "Insere o valor da vasilha ~A ~%" vasilha)
+    (let ((valor (read)))
+      (cond
+        ((AND (equal vasilha "A") (OR (> valor 3) (< valor 0))) (progn (format t "Valor invalido ~%") (ler-vasilha vasilha)))
+        ((AND (equal vasilha "B") (OR (> valor 5) (< valor 0))) (progn (format t "Valor invalido ~%") (ler-vasilha vasilha)))
+        (T valor)
+      )
+  )
+))
+
+;; ler-algoritmo
+(defun ler-algoritmo ()
+"Permite fazer a leitura do algoritmo a utilizar."
+  (progn
+    (format t "Que algoritmo quer usar para procurar? ~%")
+    (format t "1- Procura na largura ~%")
+    (format t "2- Procura na profundidade ~%")
+    (let ((resposta (read)))
+      (cond ((= resposta 1) 'bfs)
+            (T 'dfs)))
+    )
+  )
+;; ler-profundidade
+(defun ler-profundidade()
+"Permite fazer a leitura da profundidade limite para o algoritmo dfs."
+    (progn
+    (format t "Qual a profundidade limite? ~%")
+    (read)
+    ))
+
+
+;;; Output - escrita do estado do problema
+;;
+(defun escrever-no (no &optional (g t))
+"Permite escrever um no, por defeito no ecra."
+  (format g "~A" no))
+
+ 
+(defun escreve-no (no)
+  "Escreve no terminal o estado, profundidade, heurística e custo do nó."
+  (format t "| Estado: ~a | Profundidade: ~a | Heurística: ~a | Custo: ~a | Pai: ~a~%"
+          (no-estado no)
+          (no-profundidade no)
+          (no-heuristica no)
+          (no-custo no)
+          (if (no-pai no) (no-estado (no-pai no)) "NIL")
+  )
+)
+
+(defun escreve-lista-nos (lista)
+  "Escreve no terminal uma lista de nós."
+  (cond
+    ( (null lista)
+      nil
+    )
+    ( t
+      (escreve-no (car lista))
+      (escreve-lista-nos (cdr lista))
+    )
+  )
+)
+
+
+;;; Problema das vasilhas
+;;; variaveis de teste e operadores
+
+(defun operadores ()
+ "Cria uma lista com todos os operadores do problema das vasilhas."
+ (list 'vazar-a 'vazar-b 'encher-a 'encher-b 'transferir-a-b 'transferir-b-a))
+
+(defun vazar-a (no-estado)
+  "Esvazia completamente a vasilha A."
+  (list 0 (second no-estado))
+)
+
+(defun vazar-b (no-estado)
+  "Esvazia completamente a vasilha B."
+  (list (first no-estado) 0)
+)
+
+(defun encher-a (no-estado)
+  "Enche completamente a vasilha A, até 3 litros."
+  (if (= (first no-estado) 3)
+      nil
+      (list 3 (second no-estado))
+  )
+)
+
+(defun encher-b (no-estado)
+  "Enche completamente a vasilha B, até 5 litros."
+  (cond
+    ( (= (second no-estado) 5)
+      nil
+    )
+    ( t
+      (list (first no-estado) 5)
+    )
+  )
+)
+
+(defun transferir-a-b (no-estado)
+  "Transfere o máximo possível de água da vasilha A para a vasilha B."
+  (let*
+    (
+      (valor-a (first no-estado))
+      (valor-b (second no-estado))
+      (espaco-disponivel-b (- 5 valor-b))
+      (transferir (min valor-a espaco-disponivel-b))
+    )
+    (list (- valor-a transferir) (+ valor-b transferir))
+  )
+)
+
+(defun transferir-b-a (no-estado)
+  "Transfere o máximo possível de água da vasilha B para a vasilha A."
+  (let*
+    (
+      ( valor-a (first no-estado) )
+      ( valor-b (second no-estado) )
+      ( espaco-disponivel-a (- 3 valor-a) )
+      ( transferir (min valor-b espaco-disponivel-a))
+    )
+    ( list (+ valor-a transferir) (- valor-b transferir)) )
+)
+
+#| ###################### |#
+#| Tipo Abstrato de Dados |#
+
+;;; Construtor
+(defun cria-no (vasilhas &optional (g 0) (heuristica 0) (pai nil))
+  "Cria um nó com estado do vasilhas, profundidade (g), heurística e ponteiro para o nó pai."
+  (list vasilhas g heuristica pai)
+)
+
+(defun no-teste-vasilhas ()
+"Define um no teste do problema da vasilhas em que A=2, B=2, profundidade=0 e pai=NIL"
+   (cria-no '(2 0) 0 (heuristica '(2 0)))
+)
+
+;;; Funções Seletores
+(defun no-estado (no)
+  "Retorna o estado do nó (tabuleiro)."
+  (first no)
+)
+
+(defun no-profundidade (no)
+  "Retorna a profundidade do nó (g)."
+  (second no)
+)
+
+(defun no-heuristica (no)
+  "Retorna o valor da heurística do nó."
+  (third no)
+)
+
+(defun no-custo (no)
+  "Calcula o custo do nó (profundidade + heurística)."
+  (+ (no-profundidade no) (no-heuristica no))
+)
+
+(defun no-pai (no)
+  "Retorna o nó pai."
+  (fourth no)
+)
+
+#| Funções com dados testes. |#
+
+;; Teste no Listener
+#|
+(let ( (no (cria-no '(2 2) 3 2 nil)) )
+  (format t "Estado: ~a~%" (no-estado no))
+  (format t "Profundidade: ~a~%" (no-profundidade no))
+  (format t "Heurística: ~a~%" (no-heuristica no))
+  (format t "Custo: ~a~%" (no-custo no))
+)
+
+|#
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun heuristica (estado)
+  "Calcula o valor da heurística com base no estado das vasilhas."
+  (let ((va (first estado))
+        (vb (second estado)))
+    (cond
+      ((or (= va 1) (= vb 1)) 0)
+      ((= va vb) 1)
+      (t 2)
+    )
+  )
+)
+
+(defun novo-sucessor (no operador)
+  "Gera um novo sucessor com a heurística calculada."
+  (let ( (novo-estado (funcall operador (no-estado no))) )
+    (when novo-estado
+      (cria-no novo-estado
+               (1+ (no-profundidade no))
+               (heuristica novo-estado)
+               no)
+      )
+  )
+)
+
+#|
+;; Teste no Listener
+(format t "Heurística de (1 3): ~a~%" (heuristica '(1 3))) ; Resultado esperado: 0
+(format t "Heurística de (2 2): ~a~%" (heuristica '(2 2))) ; Resultado esperado: 1
+(format t "Heurística de (3 4): ~a~%" (heuristica '(3 4))) ; Resultado esperado: 2
+|#
+
+(defun ordenar-nos (lista-nos)
+  "Ordena uma lista de nós pelo custo (profundidade + heurística)."
+  (sort lista-nos #'(lambda (n1 n2)
+                      ( < (no-custo n1) (no-custo n2)) )
+  )
+)
+
+;; Teste no Listener
+#|
+(let ( (no1 (cria-no '(2 2) 1 2))
+       (no2 (cria-no '(1 3) 0 0))
+       (no3 (cria-no '(3 4) 2 2)) )
+  ( escreve-lista-nos (ordenar-nos (list no1 no2 no3)) )
+)
+|#
+
+(defun colocar-sucessores-em-abertos (abertos sucessores)
+  "Combina sucessores com a lista de abertos e ordena pelo custo total."
+  (ordenar-nos (append abertos sucessores))
+)
+
+;; Teste no Listener
+#|
+(let ( (abertos (list (cria-no '(2 2) 1 2)
+                      (cria-no '(3 4) 2 2)) )
+      ( sucessores (list (cria-no '(1 3) 0 0)
+                        (cria-no '(0 1) 1 1)) )
+     )
+  ( escreve-lista-nos (colocar-sucessores-em-abertos abertos sucessores) )
+)
+|#
+
+
+;; Implementação do algoritmo A*
+(defun no-solucaop (no)
+  "Verifica se o estado do nó é uma solução."
+  (let
+    (
+      (estado (no-estado no))
+    )
+    ( or (= (first estado) 1)
+        (= (second estado) 1))
+  )
+)
+
+(defun sucessores-heuristica (no operadores funcao-heuristica)
+  "Gera a lista de sucessores para um nó, aplicando corretamente a heurística e gravando a referência ao nó pai."
+  (cond
+    ((null operadores) nil)
+    (t
+     (let ((novo-estado (funcall (car operadores) (no-estado no))))
+       (if novo-estado
+           ;; Cria o nó sucessor com heurística e pai
+           (cons
+            (cria-no
+             novo-estado
+             (1+ (no-profundidade no))
+             (funcall funcao-heuristica novo-estado)
+             no) ;; Referência ao nó pai
+            (sucessores-heuristica no (cdr operadores) funcao-heuristica))
+           ;; Continua com o próximo operador
+           (sucessores-heuristica no (cdr operadores) funcao-heuristica))
+       )
+    )
+  )
+)
+
+;; Teste no listener
+(let ((no (cria-no '(2 2) 0 0 nil)))
+  (escreve-lista-nos (sucessores-heuristica no (operadores) #'heuristica)))
+
+(defun retorna-no-objetivo (lista-sucessores funcaoObjetivo)
+  (cond
+   ( (null lista-sucessores)
+     nil
+   )
+   ( (null (funcall funcaoObjetivo (car lista-sucessores)))
+     (retorna-no-objetivo (cdr lista-sucessores) funcaoObjetivo)
+   )
+   ( t
+     (car lista-sucessores)
+   )
+  )
+
+)
+
+(defun no-redundante-p (sucessor fechados)
+  "Verifica se o sucessor já existe nos fechados e verifica se ."
+  (cond
+    ( (null fechados) nil)
+    ( (and
+        (equal (no-estado sucessor) (no-estado (car fechados)))
+        (<= (no-custo (car fechados)) (no-custo sucessor))
+      )
+      t
+    )
+    (t (no-redundante-p sucessor (cdr fechados)))
+  )
+)
+
+(defun a* (abertos fechados funcaoObjetivo funcao-sucessores operadores funcao-heuristica &optional (nos-gerados 0) (nos-expandidos 0))
+  "Algoritmo A* implementado de forma recursiva, garantindo a gravação da heurística e do pai."
+  (cond
+    ((null abertos) nil)
+    (t
+     (let* ((n (car abertos))
+            (nos-sucessores (remove nil (funcall funcao-sucessores n operadores funcao-heuristica)))
+            (nos-filtrados
+             (remove-if #'(lambda (sucessor) (no-redundante-p sucessor fechados)) nos-sucessores))
+            (novos-abertos (colocar-sucessores-em-abertos (cdr abertos) nos-filtrados))
+            (novos-fechados (cons n fechados))
+            (nos-expandidos-novos (1+ nos-expandidos)) ;; Incrementa nós expandidos
+            (nos-gerados-novos (+ nos-gerados (length nos-sucessores)))
+            (no-objetivo (retorna-no-objetivo nos-sucessores funcaoObjetivo)))
+
+       ;; Incrementa nós expandidos se a solução for encontrada imediatamente
+       (when (funcall funcaoObjetivo n)
+         (incf nos-expandidos-novos))
+
+       (cond
+         (no-objetivo
+          no-objetivo)
+         (t
+          (a* novos-abertos
+              novos-fechados
+              funcaoObjetivo
+              funcao-sucessores
+              operadores
+              funcao-heuristica
+              nos-gerados-novos
+              nos-expandidos-novos)
+         )
+       )
+     )
+    )
+  )
+)
+
+
+(defun mostrar-solucao (no)
+  "Exibe o caminho do estado inicial até o estado final."
+  (cond
+    ( (null no) nil)
+    (t
+     (mostrar-solucao (no-pai no))
+     (escreve-no no)
+    )
+  )
+)
+
+
+;; Teste no Listener
+#|
+ (let ((estado-inicial '(2 2)))
+  (let ((resultado (a*
+                    (list (cria-no estado-inicial 0 (heuristica estado-inicial) nil))
+                    nil
+                    #'no-solucaop
+                    #'sucessores-heuristica
+                    (operadores)
+                    #'heuristica
+                    0
+                    0)))
+    (when resultado
+      (mostrar-solucao resultado))))
+|#
+
+;; LABORATÓRIO 9
+(defun escrever-no (estado-inicial solucao nos-gerados nos-expandidos tempo-execucao comprimento-caminho pen fator)
+  "Escreve os resultados da busca em log.dat, incluindo métricas adicionais."
+  (with-open-file (stream "C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/log.dat" 
+                          :direction :output 
+                          :if-does-not-exist :create 
+                          :if-exists :append)
+    (format stream "Estado Inicial: ~a~%" estado-inicial)
+    (if solucao
+        (format stream "Solução: ~a~%" (no-estado solucao))
+        (format stream "Solução: Não encontrada~%"))
+    (format stream "Comprimento do Caminho: ~a~%" comprimento-caminho)
+    (format stream "Nós Gerados: ~a~%" nos-gerados)
+    (format stream "Nós Expandidos: ~a~%" nos-expandidos)
+    (format stream "Tempo de Execução: ~a segundos~%" tempo-execucao)
+    (format stream "Penetrância: ~a~%" pen)
+    (format stream "Fator de Ramificação Média: ~a~%" fator)
+    (format stream "-----------------------------------~%")))
+
+;; Caminho para substituir na "stream"
+;; Caminho PC Rodrigo -> C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/log.dat
+;; Caminho PC Ricardo -> 
+
+(defun a*-com-tempo (abertos fechados predicado-sucesso func-sucessores operadores heuristica nos-gerados nos-expandidos)
+  "Versão do algoritmo A* que mede o tempo de execução e retorna uma estrutura com as métricas."
+  (let* ((inicio-tempo (get-internal-real-time))
+         (resultado (a* abertos fechados predicado-sucesso func-sucessores operadores heuristica nos-gerados nos-expandidos))
+         (fim-tempo (get-internal-real-time))
+         (tempo-execucao (/ (- fim-tempo inicio-tempo) internal-time-units-per-second)))
+    ;; Retorna os resultados em uma estrutura
+    (list :solucao resultado
+          :nos-gerados nos-gerados
+          :nos-expandidos nos-expandidos
+          :tempo-execucao tempo-execucao)
+  )
+)
+
+(defun penetrancia (comprimento-caminho nos-gerados)
+  "Calcula a penetrância da árvore de busca."
+  (if (and (numberp comprimento-caminho) (numberp nos-gerados) (> nos-gerados 0))
+      (/ comprimento-caminho nos-gerados)
+      "Indefinido")) ;; Retorna um valor padrão em vez de lançar erro
+
+(defun bisseccao (funcao a b epsilon)
+  "Resolve uma equação utilizando o método de bisseção (recursivo)."
+  (let ((fa (funcall funcao a))
+        (fb (funcall funcao b)))
+    (cond
+      ;; Caso base: Solução exata encontrada
+      ((or (zerop fa) (zerop fb)) (if (zerop fa) a b))
+      ;; Validação: O intervalo deve conter uma mudança de sinal
+      ((not (< (* fa fb) 0))
+       (error "A função deve mudar de sinal no intervalo dado."))
+      (t
+       ;; Passo recursivo
+       (let* ((c (/ (+ a b) 2))
+              (fc (funcall funcao c)))
+         (if (< (abs fc) epsilon)
+             c ;; Retorna a solução
+             ;; Escolhe o subintervalo onde há mudança de sinal
+             (if (< (* fa fc) 0)
+                 (bisseccao funcao a c epsilon)
+                 (bisseccao funcao c b epsilon))
+             )
+        )
+       )
+      )
+    )
+)
+
+;; Teste no Listener
+(bisseccao (lambda (x) (- (* x x) 4)) 1 3 0.001) ;; Resultado esperado: 2
+
+(defun fator-ramificacao (comprimento-caminho nos-gerados)
+  "Calcula o fator de ramificação médio resolvendo b^(n+1) - 1 = T * (b - 1)."
+  (if (and (numberp comprimento-caminho)
+           (numberp nos-gerados)
+           (> comprimento-caminho 0)
+           (> nos-gerados 0))
+      (bisseccao
+       (lambda (b) (- (/ (- (expt b (1+ comprimento-caminho)) 1) (- b 1)) nos-gerados))
+       1.01  ;; Limite inferior para evitar divisão por zero
+       10    ;; Limite superior para garantir convergência
+       0.0001)
+      "Indefinido")) ;; Retorna um valor padrão para casos inválidos
+
+;; Teste no Listener
+(fator-ramificacao 3 13) ;; Resultado esperado: ~2
+
+(defun mostrar-solucao (solucao comprimento-caminho nos-gerados nos-expandidos tempo-execucao)
+  "Mostra detalhes da solução, incluindo penetrância, fator de ramificação e tempo de execução."
+  (let ((pen (penetrancia comprimento-caminho nos-gerados))
+        (fator (fator-ramificacao comprimento-caminho nos-gerados)))
+    (format t "Solução: ~a~%" (if solucao (no-estado solucao) "Não encontrada"))
+    (format t "Comprimento do caminho: ~a~%" comprimento-caminho)
+    (format t "Nós gerados: ~a~%" nos-gerados)
+    (format t "Nós expandidos: ~a~%" nos-expandidos)
+    (format t "Tempo de execução: ~a segundos~%" tempo-execucao)
+    (format t "Penetrância: ~a~%" pen)
+    (format t "Fator de ramificação média: ~a~%" fator)
+  )
+)
+
+(defun ler-estado-inicial (file)
+  "Lê o estado inicial a partir de um file"
+  (with-open-file (stream file :direction :input :if-does-not-exist :error)
+    (read stream))
+)
+
+(defun iniciar-procura ()
+  "Inicia a procura com leitura do estado inicial e cálculo das métricas."
+  (let* ((estado-inicial (ler-estado-inicial "C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/problemas.dat"))
+         (resultado (a*-com-tempo (list (cria-no estado-inicial 0 (heuristica estado-inicial)))
+                                  nil
+                                  #'no-solucaop
+                                  #'sucessores-heuristica
+                                  (operadores)
+                                  #'heuristica
+                                  0
+                                  0)
+         )
+        )
+    (when resultado
+      (let* ((solucao (getf resultado :solucao))
+             (nos-gerados (getf resultado :nos-gerados))
+             (nos-expandidos (getf resultado :nos-expandidos))
+             (tempo-execucao (getf resultado :tempo-execucao))
+             (comprimento-caminho (if solucao (no-profundidade solucao) 0))
+             ;; Verificar se os parâmetros são válidos
+             (pen (if (and (numberp comprimento-caminho)
+                           (numberp nos-gerados)
+                           (> nos-gerados 0))
+                      (penetrancia comprimento-caminho nos-gerados)
+                      "Indefinido"))
+             (fator (if (and (numberp comprimento-caminho)
+                             (numberp nos-gerados)
+                             (> nos-gerados 0))
+                        (fator-ramificacao comprimento-caminho nos-gerados)
+                        "Indefinido")))
+        ;; Mostrar solução no terminal
+        (mostrar-solucao solucao comprimento-caminho nos-gerados nos-expandidos tempo-execucao)
+        ;; Escrever solução no arquivo
+        (escrever-no estado-inicial solucao nos-gerados nos-expandidos tempo-execucao comprimento-caminho pen fator)
+      )
+    )
+  )
+)
