@@ -2,7 +2,7 @@
 
 #| Tipo abstrato de dados ====================== |#
 
-(defun cria-no (tabuleiro &optional (g 0) (h 0) (pai nil))
+(defun cria-no (tabuleiro &optional (g 0) (h (heuristica tabuleiro)) (pai nil))
   "Cria um nó com estado do tabuleiro, profundidade (g), heurística e ponteiro para o nó pai."
   (list tabuleiro g h pai)
 )
@@ -404,7 +404,6 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
 
 ;; Número de peças a capturar, peças do tabuleiro inicial - peças atuais
 
-
 ;; C - número de peças já capturadas no tabuleiro 
 (defun c (estado-no valor-heuristico-no-inicial)
   (-
@@ -413,13 +412,14 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
   )
 )
 
-(defun heuristica (no-estado &optional (heuristica-no-inicial 0))
-   (+ (o no-estado) (c no-estado heuristica-no-inicial))
+(defun heuristica (no-estado &optional (heuristica-no-inicial (o no-estado)))
+   (- (o no-estado) (c no-estado heuristica-no-inicial))
 )
+
 
 (defun a* (funcaoObjetivo funcao-sucessores jogadas funcao-heuristica
            &optional (abertos (list (no-teste))) (fechados nil) (nos-gerados 0) (nos-expandidos 0)
-                     (tabuleiro-inicial (no-estado (car abertos)))
+                     (heuristica-tabuleiro-inicial (heuristica (no-estado (car abertos))))
           )
   "Algoritmo A* implementado de forma recursiva, garantindo a gravaÃ§Ã£o da heurÃ­stica e do pai."
   (cond
@@ -429,12 +429,13 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
     (t
      (let*
        (
+         
          (n (car abertos))  ;; Pega o nó atual para expandir
          ;; Incrementa o contador de nós expandidos
          (nos-expandidos-novos (1+ nos-expandidos))
 
          ;; Gerar sucessores do nó atual
-         (nos-sucessores (remove nil (funcall funcao-sucessores n jogadas funcao-heuristica tabuleiro-inicial)))
+         (nos-sucessores (remove nil (funcall funcao-sucessores n jogadas funcao-heuristica heuristica-tabuleiro-inicial)))
 
          ;; Filtra sucessores redundantes
          (nos-filtrados
@@ -465,11 +466,22 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
                novos-fechados
                nos-gerados-novos
                nos-expandidos-novos
-               tabuleiro-inicial
+               heuristica-tabuleiro-inicial
            )
          )
        )
       )
+    )
+  )
+)
+
+(defun mostrar-solucao (no)
+  "Exibe o caminho do estado inicial até o estado final."
+  (cond
+    ( (null no) nil)
+    (t
+     (mostrar-solucao (no-pai no))
+     (escreve-no no)
     )
   )
 )
