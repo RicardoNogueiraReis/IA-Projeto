@@ -1,4 +1,4 @@
-;;
+;; puzzle.lisp
 
 #| Tabuleiro =================================== |#
 
@@ -10,8 +10,16 @@
 (defun tabuleiro-teste ()
   "Retorna um tabuleiro de teste 2x6 que corresponde ao tabuleiro d) do enunciado do projeto"
   '(
-     (1 2 3 4 5 6)
-     (6 5 4 3 2 1)
+     (0 0 0 0 0 2)
+     (0 0 0 0 4 0)
+   )
+)
+
+(defun tabuleiro-vazio-teste ()
+  "Retorna um tabuleiro de teste 2x6 vazio (todos os valores a 0)."
+  '(
+     (0 0 0 0 0 0)
+     (0 0 0 0 0 0)
    )
 )
 
@@ -129,7 +137,8 @@
 
 (defun distribuir-pecas-aux (n indiceLinha indiceColuna linhaOriginal colunaOriginal &optional (tabuleiro (tabuleiro-vazio)))
   (cond
-     ((<= n 0) nil)
+     ( (null n) nil)
+     ( (<= n 0) nil)
      ( (and 
          (= indiceLinha 0)
          (> indiceColuna 0)

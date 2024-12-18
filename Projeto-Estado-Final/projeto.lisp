@@ -1,18 +1,17 @@
 ;; Projeto.lisp
-;; iniciar
 
-
-(load "C:/Users/ricardo/Desktop/IA-Projeto-main/Projeto-Estado-Final/procura.lisp")
-(load "C:/Users/ricardo/Desktop/IA-Projeto-main/Projeto-Estado-Final/puzzle.lisp")
+(load "procura.lisp")
+(load "puzzle.lisp")
 
 #| Input |#
 
 ;; Ler tabuleiros do ficheiro problemas.dat
 ;; Exemplo: (ler-problemas "problemas.dat")
+
 (defun ler-problemas-recursivo (stream)
   "Lê recursivamente os problemas de um ficheiro aberto e devolve uma lista de tabuleiros."
   (let
-    ((problema (read stream nil nil))) ; Tenta ler um tabuleiro
+    ((problema (read stream nil nil)))
 
     (cond
      ( (not (null problema))
@@ -105,5 +104,3 @@
     )
   )
 )
-
-;; mostra todos os tabuleiros

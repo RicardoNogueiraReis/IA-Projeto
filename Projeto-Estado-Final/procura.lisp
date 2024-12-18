@@ -2,14 +2,13 @@
 
 #| Tipo abstrato de dados ====================== |#
 
-(defun cria-no (tabuleiro &optional (g 0) (heuristica 0) (pai nil))
+(defun cria-no (tabuleiro &optional (g 0) (h 0) (pai nil))
   "Cria um nó com estado do tabuleiro, profundidade (g), heurística e ponteiro para o nó pai."
-  (list tabuleiro g heuristica pai)
+  (list tabuleiro g h pai)
 )
 
-(defun no-teste-vasilhas ()
-"Define um no teste do problema da vasilhas em que A=2, B=2, profundidade=0 e pai=NIL"
-   (cria-no '(2 0) 0 (heuristica '(2 0)))
+(defun no-teste ()
+  (cria-no (tabuleiro-teste))
 )
 
 ;;; Funções Seletores
@@ -69,147 +68,7 @@
   )
 )
 
-#||#
-
-;; TODO: Alterar para a heuristica do projeto
-(defun heuristica (estado)
-  "Calcula o valor da heurística com base no estado das vasilhas."
-  (let ((va (first estado))
-        (vb (second estado)))
-    (cond
-      ((or (= va 1) (= vb 1)) 0)
-      ((= va vb) 1)
-      (t 2)
-    )
-  )
-)
-
-#| Operadores  ================================= |#
-
-(defun distribuir-pecas-aux (n indiceLinha indiceColuna linhaOriginal colunaOriginal &optional (tabuleiro (tabuleiro-vazio)))
-  (cond
-     ((<= n 0) nil)
-     ( (and 
-         (= indiceLinha 0)
-         (> indiceColuna 0)
-         (< indiceColuna (length (first tabuleiro)))
-       ) 
-       (cond
-         ( (and
-              (= indiceLinha linhaOriginal)
-              (= indiceColuna colunaOriginal))
-
-            (distribuir-pecas-aux n indiceLinha (1- indiceColuna) linhaOriginal colunaOriginal)
-         )
-         (t
-
-          (cons
-            (list indiceLinha indiceColuna)
-            (distribuir-pecas-aux (1- n) indiceLinha (1- indiceColuna) linhaOriginal colunaOriginal)
-          )
-         )
-       )
-     )
-     ( (and
-         (= indiceLinha 0)
-         (= indiceColuna 0)
-       )
-       (cond
-         ( (and 
-             (= indiceLinha linhaOriginal)
-             (= indiceColuna colunaOriginal)
-           )
-           
-           (distribuir-pecas-aux n (1+ indiceLinha) indiceColuna linhaOriginal colunaOriginal)
-         )
-
-         (t
-           (cons
-             (list indiceLinha indiceColuna)
-             (distribuir-pecas-aux (1- n) (1+ indiceLinha) indiceColuna linhaOriginal colunaOriginal)
-           )
-         )
-       )
-     )
-	 
-     ( (and
-         (= indiceLinha 1)
-         (>= indiceColuna 0)
-         (< indiceColuna (1- (length (second tabuleiro))))
-       )
-       (cond
-         ( (and 
-             (= indiceLinha linhaOriginal)
-             (= indiceColuna colunaOriginal)
-           )
-
-           (distribuir-pecas-aux n indiceLinha (1+ indiceColuna) linhaOriginal colunaOriginal)
-         )
-         (t
-           (cons
-             (list indiceLinha indiceColuna)
-             (distribuir-pecas-aux (1- n) indiceLinha (1+ indiceColuna) linhaOriginal colunaOriginal)
-           )
-         )
-       )
-     )
-     ( (and
-         (= indiceLinha 1)
-         (= indiceColuna (1- (length (second tabuleiro))))
-       )
-       (cond
-         ( (and 
-             (= indiceLinha linhaOriginal)
-             (= indiceColuna colunaOriginal)
-           )
-
-           (distribuir-pecas-aux n (1- indiceLinha) indiceColuna linhaOriginal colunaOriginal)
-         )
-         (t
-           (cons
-             (list indiceLinha indiceColuna)
-             (distribuir-pecas-aux (1- n) (1- indiceLinha) indiceColuna linhaOriginal colunaOriginal)
-           )
-         )
-       )
-     )
-   )
-)
-
-(defun distribuir-pecas (n indiceLinha indiceColuna &optional (tabuleiro (tabuleiro-vazio)))
-  (distribuir-pecas-aux n indiceLinha indiceColuna indiceLinha indiceColuna tabuleiro)
-)
-
-
-;; Função aux para operador
-(defun percorrer-posicoes (coordenadas tabuleiro)
-"coordenadas de ma lista de posição (linha coluna) a percorrer para incrementar o número de "
-  (cond
-    ((null tabuleiro) nil)
-    ((null coordenadas) tabuleiro)
-      (t 
-      (let
-        (
-          (novo-tabuleiro (incrementar-posicao (first (car coordenadas)) (second (car coordenadas)) tabuleiro))
-        )
-          (cond
-            ( (and
-                (= (length coordenadas) 1)
-                (or
-                  (= (celula (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro) 1) 
-                  (= (celula (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro) 3)
-                  (= (celula (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro) 5)
-                )
-              )
-              (substituir (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro)
-            )
-              (t (percorrer-posicoes (cdr coordenadas) novo-tabuleiro))
-          )
-      )
-     )
-  )
-)
-
+#| Operador  ================================= |#
 
 (defun operador (indiceLinha indiceColuna &optional (tabuleiro (tabuleiro-teste)))
   (cond
@@ -238,22 +97,12 @@
 
 #| outros  ================================= |#
 
-;; TODO: 
-(defun no-solucaop (no)
-  (cond
-   (
-    (or
-      (= (vasilha-a-conteudo no) 1)
-      (= (vasilha-b-conteudo no) 1)
-    )
-    t
+;; no-solucaop
+;; Exemplo: (no-solucaop (cria-no (tabuleiro-vazio-teste))) ;; T
+;; Exemplo: (no-solucaop (cria-no (tabuleiro-teste)))       ;; NIL
 
-   )
-   (
-    t
-    nil
-   )
-  )
+(defun no-solucaop (no)
+  (tabuleiro-vaziop (no-estado no))
 )
 
 
@@ -261,25 +110,22 @@
 ;; teste: (novo-sucessor (no-teste) '(1 1))
 ;; resultado: ???
 
-(defun novo-sucessor (no operador)
+(defun novo-sucessor (no jogadas)
   "Gera um novo sucessor com a heurística calculada."
-  (let
-    (
-      (novo-estado (funcall operador (no-estado no)))
-    )
-    (cond
-      ( (null novo-estado)
-        nil
-      )
-      (t
-        (cria-no novo-estado
+  (cond
+   ( (null no)
+     nil
+   )
+   (t
+      (funcall #'cria-no
+               (operador (first jogadas) (second jogadas) (no-estado no)) 
                (1+ (no-profundidade no))
-               (heuristica novo-estado)
-               no)
+               (heuristica (no-estado no))
+               no  
       )
-      
     )
-  )
+      
+   )
 )
 
 
@@ -288,26 +134,21 @@
 ;; teste: (sucessores (no-teste) (operadores) 'dfs 2)
 ;; resultado: (((0 2) 1 ((2 2) 0 NIL)) ((2 0) 1 ((2 2) 0 NIL)) ((3 2) 1 ((2 2) 0 NIL)) ((2 5) 1 ((2 2) 0 NIL)) ((0 4) 1 ((2 2) 0 NIL)) ((3 1) 1 ((2 2) 0 NIL)))
 
-(defun sucessores-aux (no operadores algoritmo &optional (dfs-profundidade 10))
-  (cond 
-   (
-    (null operadores)
-     nil
-   )
-   (
-    (and (equal algoritmo "dfs") (= (second no) dfs-profundidade))  ;; (second no) => ((2 2) «0» nil) «Profundidade»
-     nil
-   )
-   (
-    t
-    (cons (novo-sucessor no (car operadores)) (sucessores no (cdr operadores) "dfs" dfs-profundidade))
-   )
-  )
- 
-)
 
-(defun sucessores (no operadores algoritmo &optional (dfs-profundidade 10))
-  (remove-if 'null (sucessores-aux no operadores algoritmo dfs-profundidade))
+
+(defun sucessores (no jogadas algoritmo &optional (dfs-profundidade 10))
+  (cond
+    ((null jogadas) nil)
+    ( (and (equal algoritmo "dfs") (>= (no-profundidade no) dfs-profundidade)) nil)
+    ( t
+      (remove-if 'null
+                 (cons (novo-sucessor no (car jogadas))
+                       (sucessores no (cdr jogadas) algoritmo dfs-profundidade)
+                 )
+      )
+    )
+  )
+  
 )
 
 ;; Funções Auxiliares ao BFS
@@ -394,7 +235,7 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
 
 ;; resultado: ((3 1) 1 ((2 2) 0 NIL))
 
-(defun bfs (funcaoObjetivo funcaoSucessores operadores &optional (abertos nil) (fechados nil))
+(defun bfs (funcaoObjetivo funcaoSucessores jogadas &optional (abertos nil) (fechados nil))
   (cond
      (
        (null abertos)
@@ -407,7 +248,7 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
 
            ; Expande o nó n, Colocar os sucessores no fim de ABERTOS, 
            ; colocando os ponteiros para n. (novo-sucessor)
-          (nos-sucessores (remove nil (funcall funcaoSucessores n operadores "bfs")) )
+          (nos-sucessores (remove nil (funcall funcaoSucessores n jogadas "bfs")))
 
           ;; (a (print nos-sucessores))
            ; Remove o primeiro nó de ABERTOS e coloca os sucessores no fim da lista de abertos
@@ -426,7 +267,7 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
           )
           (
             t
-            (bfs funcaoObjetivo funcaoSucessores operadores novos-abertos novos-fechados)
+            (bfs funcaoObjetivo funcaoSucessores jogadas novos-abertos novos-fechados)
           )
         )
        )
@@ -436,10 +277,10 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
 
 
 ;; procura na profundidade
-;; teste: (dfs 'no-solucaop 'sucessores (operadores) 10 (list (no-teste)))
+;; teste: (dfs 'no-solucaop 'sucessores (jogadas) 10 (list (no-teste)))
 ;; resultado: ((3 1) 1 ((2 2) 0 NIL))
 
-(defun dfs (funcaoObjetivo funcaoSucessores operadores profundidadeMax &optional (abertos nil) (fechados nil))
+(defun dfs (funcaoObjetivo funcaoSucessores jogadas profundidadeMax &optional (abertos nil) (fechados nil))
   (cond
      (
        (null abertos)
@@ -452,7 +293,7 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
 
            ; Expande o nó, colocar os sucessores no fim de ABERTOS, 
            ; colocando os ponteiros para n. (novo-sucessor)
-          (nos-sucessores (remove nil (funcall funcaoSucessores n operadores "dfs" profundidadeMax)))
+          (nos-sucessores (remove nil (funcall funcaoSucessores n jogadas "dfs" profundidadeMax)))
 
            ;; (a (print nos-sucessores))
            ; Remove o primeiro nó de ABERTOS e coloca os sucessores no fim da lista de abertos
@@ -471,7 +312,7 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
           )
           (
             t
-            (dfs funcaoObjetivo funcaoSucessores operadores profundidadeMax novos-abertos novos-fechados)
+            (dfs funcaoObjetivo funcaoSucessores jogadas profundidadeMax novos-abertos novos-fechados)
           )
         )
        )
@@ -482,24 +323,33 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
 
 ;;; A*
 
-(defun sucessores-heuristica (no operadores funcao-heuristica)
+(defun novo-sucessor-heuristica (no jogada)
+  "Gera um novo sucessor com a heurística calculada."
+  (cond
+   ( (null no)
+     nil
+   )
+   (t
+      (funcall #'cria-no
+               (operador (first jogada) (second jogada) (no-estado no))
+               (1+ (no-profundidade no))
+               (heuristica (no-estado no))
+               no
+      )
+    )
+  )
+)
+
+(defun sucessores-heuristica (no jogadas funcao-heuristica heuristica-no-inicial)
   "Gera a lista de sucessores para um nó, aplicando corretamente a heurística e gravando a referência ao nó pai."
   (cond
-    ((null operadores) nil)
+    ((null jogadas) nil)
     (t
-     (let ((novo-estado (funcall (car operadores) (no-estado no))))
-       (if novo-estado
-           ;; Cria o nó sucessor com heurística e pai
-           (cons
-            (cria-no
-             novo-estado
-             (1+ (no-profundidade no))
-             (funcall funcao-heuristica novo-estado)
-             no) ;; Referência ao nó pai
-            (sucessores-heuristica no (cdr operadores) funcao-heuristica))
-           ;; Continua com o próximo operador
-           (sucessores-heuristica no (cdr operadores) funcao-heuristica))
-       )
+      (remove-if 'null
+                 (cons (novo-sucessor-heuristica no (car jogadas))
+                       (sucessores-heuristica no (cdr jogadas) funcao-heuristica heuristica-no-inicial)
+                 )
+      )
     )
   )
 )
@@ -518,47 +368,111 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
   )
 )
 
-(defun a* (abertos fechados funcaoObjetivo funcao-sucessores operadores funcao-heuristica &optional (nos-gerados 0) (nos-expandidos 0))
-  "Algoritmo A* implementado de forma recursiva, garantindo a gravação da heurística e do pai."
-  (cond
-    ((null abertos) nil)
-    (t
-     (let* ((n (car abertos))
-            ;; Gerar sucessores com heurística e pai
-            (nos-sucessores (remove nil (funcall funcao-sucessores n operadores funcao-heuristica)))
 
-            ;; Remover redundâncias e adicionar novos sucessores a abertos
-            (nos-sucessores-filtrados-fechados (remove-if
-                             #'(lambda (sucessor) (no-redundante-p sucessor fechados))
-                             nos-sucessores)
-            )
-            (nos-sucessores-filtrados (remove-if
-                             #'(lambda (sucessor) (no-redundante-p sucessor abertos))
-                             nos-sucessores-filtrados-fechados)
-            )
-            (novos-abertos (colocar-sucessores-em-abertos (cdr abertos) nos-sucessores-filtrados))
+(defun ordenar-nos (lista-nos)
+  "Ordena uma lista de nós pelo custo (profundidade + heurística)."
+  (sort lista-nos #'(lambda (n1 n2)
+                      ( < (no-custo n1) (no-custo n2)) )
+  )
+)
 
-            (novos-fechados (cons n fechados))
-            (nos-expandidos-novos (1+ nos-expandidos))
-            (nos-gerados-novos (+ nos-gerados (length nos-sucessores)))
-            (no-objetivo (retorna-no-objetivo nos-sucessores funcaoObjetivo))
-           )
+(defun colocar-sucessores-em-abertos (abertos sucessores)
+  "Combina sucessores com a lista de abertos e ordena pelo custo total."
+  (ordenar-nos (append abertos sucessores))
+)
 
-       (cond
-         (no-objetivo ;; Solução encontrada
-          no-objetivo)
-         (t ;; Continuar a procura
-          (a* novos-abertos
-              novos-fechados
-              funcaoObjetivo
-              funcao-sucessores
-              operadores
-              funcao-heuristica
-              nos-gerados-novos
-              nos-expandidos-novos)
-         )
-       )
-     )
+#| Heuristica |#
+;; (format t "~a~%" lista-jogadas)
+
+(defun o-aux (linha)
+  (let
+    ((pecas (car linha)))
+    
+    (cond
+      ( (null linha) 0)
+      ( t
+        (+ pecas (o-aux (cdr linha)))
+      )
     )
   )
 )
+
+;; O - número de peças a capturar no tabuleiro 
+(defun o (no-estado) ;; todo: fazer com o let
+  (+ (o-aux (first no-estado)) (o-aux (second no-estado)) )
+)
+
+;; Número de peças a capturar, peças do tabuleiro inicial - peças atuais
+
+
+;; C - número de peças já capturadas no tabuleiro 
+(defun c (estado-no valor-heuristico-no-inicial)
+  (-
+    valor-heuristico-no-inicial
+    (o estado-no)
+  )
+)
+
+(defun heuristica (no-estado &optional (heuristica-no-inicial 0))
+   (+ (o no-estado) (c no-estado heuristica-no-inicial))
+)
+
+(defun a* (funcaoObjetivo funcao-sucessores jogadas funcao-heuristica
+           &optional (abertos (list (no-teste))) (fechados nil) (nos-gerados 0) (nos-expandidos 0)
+                     (tabuleiro-inicial (no-estado (car abertos)))
+          )
+  "Algoritmo A* implementado de forma recursiva, garantindo a gravaÃ§Ã£o da heurÃ­stica e do pai."
+  (cond
+    ;; Caso base: lista de abertos vazia
+    ((null abertos) nil)
+
+    (t
+     (let*
+       (
+         (n (car abertos))  ;; Pega o nó atual para expandir
+         ;; Incrementa o contador de nós expandidos
+         (nos-expandidos-novos (1+ nos-expandidos))
+
+         ;; Gerar sucessores do nó atual
+         (nos-sucessores (remove nil (funcall funcao-sucessores n jogadas funcao-heuristica tabuleiro-inicial)))
+
+         ;; Filtra sucessores redundantes
+         (nos-filtrados
+           (remove-if #'(lambda (sucessor) (no-redundante-p sucessor fechados)) nos-sucessores))
+
+         ;; Incrementa o contador de nós gerados
+         (nos-gerados-novos (+ nos-gerados (length nos-filtrados))) ;; Incrementa com base nos sucessores válidos
+
+         ;; Adiciona sucessores a "abertos"
+         (novos-abertos (colocar-sucessores-em-abertos (cdr abertos) nos-filtrados))
+         (novos-fechados (cons n fechados)) ;; Atualiza lista de fechados
+
+         ;; Verifica se algum dos sucessores é uma solução
+         (no-objetivo (retorna-no-objetivo nos-sucessores funcaoObjetivo)) ;; Verifica se algum sucessor é objetivo
+       )
+
+       ;; Verifica se o nó atual é solução
+       (cond
+         ( (not (null no-objetivo))
+            no-objetivo
+         )
+         (t
+           (a* funcaoObjetivo
+               funcao-sucessores
+               jogadas
+               funcao-heuristica
+               novos-abertos
+               novos-fechados
+               nos-gerados-novos
+               nos-expandidos-novos
+               tabuleiro-inicial
+           )
+         )
+       )
+      )
+    )
+  )
+)
+
+
+;; (a* #'no-solucaop #'sucessores-heuristica (jogadas) #'heuristica (list (no-teste)))
