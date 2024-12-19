@@ -91,19 +91,16 @@
 (defun executar-procura (algoritmo tabuleiro profundidade)
   "Executa o algoritmo de procura correspondente."
 
-  (print tabuleiro)
   (cond
-    ;; Algoritmo BFS
+
     ((equal algoritmo 'bfs)
       (mostrar-solucao (bfs #'no-solucaop #'sucessores (jogadas) (list (cria-no tabuleiro))))
     )
 
-    ;; Algoritmo DFS
     ( (equal algoritmo 'dfs)
       (mostrar-solucao (dfs #'no-solucaop #'sucessores (jogadas) profundidade (list (cria-no tabuleiro))))
     )
 
-    ;; Algoritmo A*
     ( (equal algoritmo 'a*)
       (mostrar-solucao (a* #'no-solucaop #'sucessores-heuristica (jogadas) #'heuristica (list (cria-no tabuleiro))))
     )
