@@ -358,15 +358,14 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
   "Verifica se o sucessor já existe na lista de abertos/fechados."
   (cond
     ( (null lista) nil)
-    ( (and
-        (equal (no-estado sucessor) (no-estado (car lista)))
-        (<= (no-custo (car lista)) (no-custo sucessor))
-      )
+    ( (equal (no-estado sucessor) (no-estado (car lista)))
       t
     )
     (t (no-redundante-p sucessor (cdr lista)))
   )
 )
+
+
 
 
 (defun ordenar-nos (lista-nos)
@@ -398,7 +397,7 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
 )
 
 ;; O - número de peças a capturar no tabuleiro 
-(defun o (no-estado) ;; todo: fazer com o let
+(defun o (no-estado)
   (+ (o-aux (first no-estado)) (o-aux (second no-estado)) )
 )
 

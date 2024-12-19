@@ -59,9 +59,7 @@
   (mostrar-tabuleiros tabuleiros)
 
   (let ((escolha (read)))
-
-
-    (nth escolha tabuleiros)
+    (nth (1- escolha) tabuleiros)
   )
 )
 
@@ -77,8 +75,8 @@
     (let ((resposta (read)))
       (cond
         ((= resposta 1) 'bfs)
-        ((= resposta 1) 'dfs)
-        ((= resposta 1) 'a*)
+        ((= resposta 2) 'dfs)
+        ((= resposta 3) 'a*)
       )
     )
   )
@@ -92,15 +90,24 @@
 
 (defun executar-procura (algoritmo tabuleiro profundidade)
   "Executa o algoritmo de procura correspondente."
+
+  (print tabuleiro)
   (cond
-    ( (equal algoritmo 'bfs)
-      (format t "Executando BFS no tabuleiro: ~a~%" tabuleiro)
+    ;; Algoritmo BFS
+    ((equal algoritmo 'bfs)
+      (mostrar-solucao (bfs #'no-solucaop #'sucessores (jogadas) (list (cria-no tabuleiro))))
     )
+
+    ;; Algoritmo DFS
     ( (equal algoritmo 'dfs)
-      (format t "Executando DFS no tabuleiro: ~a com profundidade ~d~%" tabuleiro profundidade)
+      (mostrar-solucao (dfs #'no-solucaop #'sucessores (jogadas) profundidade (list (cria-no tabuleiro))))
     )
+
+    ;; Algoritmo A*
     ( (equal algoritmo 'a*)
-      (format t "Executando A* no tabuleiro: ~a~%" tabuleiro)
+      (mostrar-solucao (a* #'no-solucaop #'sucessores-heuristica (jogadas) #'heuristica (list (cria-no tabuleiro))))
     )
   )
 )
+
+

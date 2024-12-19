@@ -404,19 +404,18 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
 
 ;; Número de peças a capturar, peças do tabuleiro inicial - peças atuais
 
-
 ;; C - número de peças já capturadas no tabuleiro 
 (defun c (estado-no valor-heuristico-no-inicial)
   (-
-    (o estado-no)
     valor-heuristico-no-inicial
-    
+    (o estado-no)
   )
 )
 
 (defun heuristica (no-estado &optional (heuristica-no-inicial (o no-estado)))
    (- (o no-estado) (c no-estado heuristica-no-inicial))
 )
+
 
 (defun a* (funcaoObjetivo funcao-sucessores jogadas funcao-heuristica
            &optional (abertos (list (no-teste))) (fechados nil) (nos-gerados 0) (nos-expandidos 0)
