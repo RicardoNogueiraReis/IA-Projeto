@@ -95,7 +95,7 @@
   (read)
 )
 
-(defun executar-procura (algoritmo tabuleiro profundidade)
+(defun executar-procura-antigo (algoritmo tabuleiro profundidade)
   "Executa o algoritmo de procura correspondente."
 
   (cond
@@ -112,5 +112,27 @@
       (mostrar-solucao (a* #'no-solucaop #'sucessores-heuristica (jogadas) #'heuristica (list (cria-no tabuleiro))))
     )
   )
+)
+
+(defun executar-procura (algoritmo tabuleiro profundidade)
+  "Executa o algoritmo de procura correspondente, exibe a solução e retorna o resultado."
+  (let
+    ( ( resultado
+        (cond
+          ( (equal algoritmo 'bfs)
+            (bfs #'no-solucaop #'sucessores (jogadas) (list (cria-no tabuleiro))))
+          ( (equal algoritmo 'dfs)
+            (dfs #'no-solucaop #'sucessores (jogadas) profundidade (list (cria-no tabuleiro))))
+          ( (equal algoritmo 'a*)
+            (a* #'no-solucaop #'sucessores-heuristica (jogadas) #'heuristica (list (cria-no tabuleiro))))
+        )
+      )
+    )
+    
+    (mostrar-solucao resultado)                    ;; Mostra o resultado em tabela no terminal
+    
+    resultado                                      ;; Retorna o resultado para que seja escrito para o ficheiro log.dat
+  )
+
 )
 

@@ -41,7 +41,7 @@
   (length (nth linha tabuleiro))
 )
 
-;; Função auxiliar a tabuleiro-vaziop
+;; Funï¿½ï¿½o auxiliar a tabuleiro-vaziop
 (defun linha-vazia-p (linhaTabuleiro)
   (cond
    (
@@ -60,7 +60,7 @@
 )
 
 (defun tabuleiro-vaziop (tabuleiro)
-"Recebe um tabuleiro e verifica se o mesmo se encontra vazio, ou seja, tem todas as células com o valor 0."
+"Recebe um tabuleiro e verifica se o mesmo se encontra vazio, ou seja, tem todas as cï¿½lulas com o valor 0."
   (let
    (
      (linha-1 (linha-vazia-p (linha 0 tabuleiro)))
@@ -230,9 +230,9 @@
   (distribuir-pecas-aux n indiceLinha indiceColuna indiceLinha indiceColuna tabuleiro)
 )
 
-;; Funções aux para operador
+;; Funï¿½ï¿½es aux para operador
 (defun percorrer-posicoes (coordenadas tabuleiro)
-"coordenadas de uma lista de posiçõess (linha coluna) a percorrer para incrementar."
+"coordenadas de uma lista de posiï¿½ï¿½ess (linha coluna) a percorrer para incrementar."
   (cond
     ((null tabuleiro) nil)
     ((null coordenadas) tabuleiro)
@@ -258,3 +258,4 @@
      )
   )
 )
+
