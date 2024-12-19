@@ -361,12 +361,11 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
     ( (equal (no-estado sucessor) (no-estado (car lista)))
       t
     )
-    (t (no-redundante-p sucessor (cdr lista)))
+    ( t
+      (no-redundante-p sucessor (cdr lista))
+    )
   )
 )
-
-
-
 
 (defun ordenar-nos (lista-nos)
   "Ordena uma lista de nós pelo custo (profundidade + heurística)."
@@ -404,23 +403,23 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
 ;; Número de peças a capturar, peças do tabuleiro inicial - peças atuais
 
 ;; C - número de peças já capturadas no tabuleiro 
-(defun c (estado-no valor-heuristico-no-inicial)
+(defun c (estado-no numero-pecas-iniciais )
   (-
-    valor-heuristico-no-inicial
+    numero-pecas-iniciais
     (o estado-no)
   )
 )
 
-(defun heuristica (no-estado &optional (heuristica-no-inicial (o no-estado)))
-   (- (o no-estado) (c no-estado heuristica-no-inicial))
+(defun heuristica (no-estado &optional (numero-pecas-iniciais (o no-estado)))
+   (- (o no-estado) (c no-estado numero-pecas-iniciais))
 )
 
 
 (defun a* (funcaoObjetivo funcao-sucessores jogadas funcao-heuristica
            &optional (abertos (list (no-teste))) (fechados nil) (nos-gerados 0) (nos-expandidos 0)
-                     (heuristica-tabuleiro-inicial (heuristica (no-estado (car abertos))))
+                     (numero-pecas-iniciais  (o (no-estado (car abertos))))
           )
-  "Algoritmo A* implementado de forma recursiva, garantindo a gravaÃ§Ã£o da heurÃ­stica e do pai."
+  "Algoritmo A* implementado de forma recursiva."
   (cond
     ;; Caso base: lista de abertos vazia
     ((null abertos) nil)
@@ -434,7 +433,7 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
          (nos-expandidos-novos (1+ nos-expandidos))
 
          ;; Gerar sucessores do nó atual
-         (nos-sucessores (remove nil (funcall funcao-sucessores n jogadas funcao-heuristica heuristica-tabuleiro-inicial)))
+         (nos-sucessores (remove nil (funcall funcao-sucessores n jogadas funcao-heuristica numero-pecas-iniciais)))
 
          ;; Filtra sucessores redundantes
          (nos-filtrados
@@ -465,7 +464,7 @@ Verifica se já existe um dos na lista de abertos e na lista de fechados."
                novos-fechados
                nos-gerados-novos
                nos-expandidos-novos
-               heuristica-tabuleiro-inicial
+               numero-pecas-iniciais 
            )
          )
        )

@@ -37,15 +37,22 @@
 (defun iniciar ()
   "Permite iniciar o programa, lendo o tabuleiro, o algoritmo e executando a procura."
   (let*
-    (
-      (tabuleiros (ler-problemas "problemas.dat"))
-      (tabuleiro (escolher-tabuleiro tabuleiros))
-      (algoritmo (ler-algoritmo))
-      (profundidade (if (eql algoritmo 'dfs) (ler-profundidade) nil))
-    )
-    (executar-procura algoritmo tabuleiro profundidade)
-  )
+      ((tabuleiros (ler-problemas "problemas.dat"))
+       (tabuleiro (escolher-tabuleiro tabuleiros))
+       (algoritmo (ler-algoritmo))
+       (profundidade (if (eql algoritmo 'dfs) (ler-profundidade) nil))
+       (resultado (executar-procura algoritmo tabuleiro profundidade)))
+    (escrever-log resultado algoritmo)
+    resultado))
+
+
+
+(defun escrever-log (resultado algoritmo)
+  "Escreve os resultados da procura no arquivo log.dat."
+  (with-open-file (stream "log.dat" :direction :output :if-exists :append)
+    (format stream "Algoritmo: ~a~%Resultado: ~a~%~%" algoritmo resultado))
 )
+
 
 (defun mostrar-tabuleiros (tabuleiros)
   "Mostra os tabuleiros numerados."
@@ -106,5 +113,4 @@
     )
   )
 )
-
 
