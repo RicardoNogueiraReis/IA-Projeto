@@ -1,7 +1,7 @@
 ;; Projeto.lisp
 
-(load "procura.lisp")
-(load "puzzle.lisp")
+(load "C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/Projeto-Estado-Final/procura.lisp")
+(load "C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/Projeto-Estado-Final/puzzle.lisp")
 
 #| Input |#
 
@@ -37,7 +37,7 @@
 (defun iniciar ()
   "Permite iniciar o programa, lendo o tabuleiro, o algoritmo e executando a procura."
   (let*
-      ((tabuleiros (ler-problemas "problemas.dat"))
+      ((tabuleiros (ler-problemas "C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/Projeto-Estado-Final/problemas.dat"))
        (tabuleiro (escolher-tabuleiro tabuleiros))
        (algoritmo (ler-algoritmo))
        (profundidade (if (eql algoritmo 'dfs) (ler-profundidade) nil))
@@ -49,7 +49,7 @@
 
 (defun escrever-log (resultado algoritmo)
   "Escreve os resultados da procura no arquivo log.dat."
-  (with-open-file (stream "log.dat" :direction :output :if-exists :append)
+  (with-open-file (stream "C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/Projeto-Estado-Final/log.dat" :direction :output :if-exists :append)
     (format stream "Algoritmo: ~a~%Resultado: ~a~%~%" algoritmo resultado))
 )
 
