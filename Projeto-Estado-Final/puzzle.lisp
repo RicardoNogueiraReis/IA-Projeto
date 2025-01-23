@@ -1,4 +1,4 @@
-;; puzzle.lisp
+;;; puzzle.lisp
 
 #| Tabuleiro =================================== |#
 
@@ -30,7 +30,6 @@
   (nth indice tabuleiro)
 )
 
-
 ;; (celula 0 1 (tabuleiro-teste))
 ;;                y           x
 (defun celula (indiceLinha posicao tabuleiro)
@@ -41,7 +40,6 @@
   (length (nth linha tabuleiro))
 )
 
-;; Funï¿½ï¿½o auxiliar a tabuleiro-vaziop
 (defun linha-vazia-p (linhaTabuleiro)
   (cond
    (
@@ -60,21 +58,18 @@
 )
 
 (defun tabuleiro-vaziop (tabuleiro)
-"Recebe um tabuleiro e verifica se o mesmo se encontra vazio, ou seja, tem todas as cï¿½lulas com o valor 0."
+  "Recebe um tabuleiro e verifica se o mesmo se encontra vazio, ou seja, tem todas as células com o valor 0."
   (let
    (
      (linha-1 (linha-vazia-p (linha 0 tabuleiro)))
      (linha-2 (linha-vazia-p (linha 1 tabuleiro)))
    )
-
    (and linha-1 linha-2)
   )
-
 )
 
-;; (substituir-posicao 0 (linha 0 (tabuleiro-vazio)) 8)
 (defun substituir-posicao (posicao linhaTabuleiro &optional (novo-valor 0))
-"Substitui o valor de uma linha do tabuleiro por um valor a especificar."
+  "Substitui o valor de uma linha do tabuleiro por um valor a especificar."
   (cond
     (
       (null linhaTabuleiro)
@@ -91,8 +86,6 @@
   )
 )
 
-
-;;                      y         x
 (defun substituir (indiceLinha posicao tabuleiro &optional (novo-valor 0))
   (cond
     ( (= indiceLinha 0)
@@ -104,7 +97,6 @@
   )
 )
 
-;; aux da incrementar-posicao
 (defun incrementar (posicao linhaTabuleiro)
   (cond
     (
@@ -114,7 +106,7 @@
     (
       (> posicao 0)
       (append (list (car linhaTabuleiro)) (incrementar (1- posicao) (cdr linhaTabuleiro)))
-      )
+    )
     (
       t
       (append (list (1+ (car linhaTabuleiro))) (cdr linhaTabuleiro))
@@ -131,9 +123,7 @@
       (list (linha 0 tabuleiro) (incrementar posicao (linha indiceLinha tabuleiro)))
     )
   )
-
 )
-
 
 (defun distribuir-pecas-aux (n indiceLinha indiceColuna linhaOriginal colunaOriginal &optional (tabuleiro (tabuleiro-vazio)))
   (cond
@@ -142,86 +132,57 @@
      ( (and 
          (= indiceLinha 0)
          (> indiceColuna 0)
-         (< indiceColuna (length (first tabuleiro)))
-       ) 
+         (< indiceColuna (length (first tabuleiro))))
        (cond
          ( (and
               (= indiceLinha linhaOriginal)
               (= indiceColuna colunaOriginal))
-
-            (distribuir-pecas-aux n indiceLinha (1- indiceColuna) linhaOriginal colunaOriginal)
-         )
+            (distribuir-pecas-aux n indiceLinha (1- indiceColuna) linhaOriginal colunaOriginal))
          (t
-
-          (cons
-            (list indiceLinha indiceColuna)
-            (distribuir-pecas-aux (1- n) indiceLinha (1- indiceColuna) linhaOriginal colunaOriginal)
-          )
-         )
-       )
+            (cons
+              (list indiceLinha indiceColuna)
+              (distribuir-pecas-aux (1- n) indiceLinha (1- indiceColuna) linhaOriginal colunaOriginal))))
      )
      ( (and
          (= indiceLinha 0)
-         (= indiceColuna 0)
-       )
+         (= indiceColuna 0))
        (cond
          ( (and 
              (= indiceLinha linhaOriginal)
-             (= indiceColuna colunaOriginal)
-           )
-           
-           (distribuir-pecas-aux n (1+ indiceLinha) indiceColuna linhaOriginal colunaOriginal)
-         )
-
+             (= colunaOriginal 0))
+           (distribuir-pecas-aux n (1+ indiceLinha) colunaOriginal linhaOriginal colunaOriginal))
          (t
            (cons
-             (list indiceLinha indiceColuna)
-             (distribuir-pecas-aux (1- n) (1+ indiceLinha) indiceColuna linhaOriginal colunaOriginal)
-           )
-         )
-       )
+             (list indiceLinha colunaOriginal)
+             (distribuir-pecas-aux (1- n) (1+ indiceLinha) colunaOriginal linhaOriginal colunaOriginal))))
      )
-	 
+     
      ( (and
          (= indiceLinha 1)
-         (>= indiceColuna 0)
-         (< indiceColuna (1- (length (second tabuleiro))))
-       )
+         (>= colunaOriginal 0)
+         (< colunaOriginal (1- (length (second tabuleiro)))))
        (cond
          ( (and 
              (= indiceLinha linhaOriginal)
-             (= indiceColuna colunaOriginal)
-           )
-
-           (distribuir-pecas-aux n indiceLinha (1+ indiceColuna) linhaOriginal colunaOriginal)
-         )
+             (= colunaOriginal colunaOriginal))
+           (distribuir-pecas-aux n indiceLinha (1+ colunaOriginal) linhaOriginal colunaOriginal))
          (t
            (cons
-             (list indiceLinha indiceColuna)
-             (distribuir-pecas-aux (1- n) indiceLinha (1+ indiceColuna) linhaOriginal colunaOriginal)
-           )
-         )
-       )
+             (list indiceLinha colunaOriginal)
+             (distribuir-pecas-aux (1- n) indiceLinha (1+ colunaOriginal) linhaOriginal colunaOriginal))))
      )
      ( (and
          (= indiceLinha 1)
-         (= indiceColuna (1- (length (second tabuleiro))))
-       )
+         (= colunaOriginal (1- (length (second tabuleiro)))))
        (cond
          ( (and 
              (= indiceLinha linhaOriginal)
-             (= indiceColuna colunaOriginal)
-           )
-
-           (distribuir-pecas-aux n (1- indiceLinha) indiceColuna linhaOriginal colunaOriginal)
-         )
+             (= colunaOriginal colunaOriginal))
+           (distribuir-pecas-aux n (1- indiceLinha) colunaOriginal linhaOriginal colunaOriginal))
          (t
            (cons
-             (list indiceLinha indiceColuna)
-             (distribuir-pecas-aux (1- n) (1- indiceLinha) indiceColuna linhaOriginal colunaOriginal)
-           )
-         )
-       )
+             (list indiceLinha colunaOriginal)
+             (distribuir-pecas-aux (1- n) (1- indiceLinha) colunaOriginal linhaOriginal colunaOriginal))))
      )
    )
 )
@@ -230,9 +191,8 @@
   (distribuir-pecas-aux n indiceLinha indiceColuna indiceLinha indiceColuna tabuleiro)
 )
 
-;; Funï¿½ï¿½es aux para operador
 (defun percorrer-posicoes (coordenadas tabuleiro)
-"coordenadas de uma lista de posiï¿½ï¿½ess (linha coluna) a percorrer para incrementar."
+  "coordenadas de uma lista de posições (linha coluna) a percorrer para incrementar."
   (cond
     ((null tabuleiro) nil)
     ((null coordenadas) tabuleiro)
@@ -247,15 +207,30 @@
                 (or
                   (= (celula (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro) 1) 
                   (= (celula (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro) 3)
-                  (= (celula (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro) 5)
-                )
-              )
-              (substituir (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro)
-            )
-              (t (percorrer-posicoes (cdr coordenadas) novo-tabuleiro))
-          )
-      )
+                  (= (celula (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro) 5)))
+              (substituir (first (car coordenadas)) (second (car coordenadas)) novo-tabuleiro))
+            (t 
+              (percorrer-posicoes (cdr coordenadas) novo-tabuleiro))))
      )
   )
 )
 
+;; FASE 2
+
+(defun jogadas-validas (estado)
+  ;; Aqui, você deve implementar a lógica para determinar todas as jogadas válidas para o estado atual do tabuleiro.
+  (let (result (list))
+    (dotimes (i (length (first estado)))
+      (dotimes (j 2)
+        (if (> (celula j i estado) 0)
+            (push (list j i) result))))
+    (nreverse result)))
+
+(defun aplicar-jogada (estado jogada)
+  ;; Implementação simplificada que altera o estado do tabuleiro conforme a jogada escolhida
+  (let* ((linha (first jogada))
+         (coluna (second jogada))
+         (pecas (celula linha coluna estado)))
+    (if (zerop pecas)
+        estado  ;; Jogada inválida, retorna o mesmo estado
+        (percorrer-posicoes (distribuir-pecas pecas linha coluna estado) estado))))

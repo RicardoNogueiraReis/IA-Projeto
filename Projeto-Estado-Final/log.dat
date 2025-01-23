@@ -14,3 +14,9 @@ Resultado: (((0 0 0 0 0 0) (0 0 0 0 0 0)) 4 1 (((0 0 0 0 0 0) (0 0 0 0 0 1)) 3 4
 Algoritmo: BFS
 Resultado: (((0 0 0 0 0 0) (0 0 0 0 0 0)) 4 1 (((0 0 0 0 0 0) (0 0 0 0 0 1)) 3 4 (((0 0 0 0 2 1) (0 0 0 0 0 1)) 2 5 (((0 0 0 0 1 0) (0 0 0 0 4 0)) 1 6 (((0 0 0 0 0 2) (0 0 0 0 4 0)) 0 6 NIL)))))
 
+Algoritmo: NIL
+Resultado: NIL
+
+Algoritmo: NIL
+Resultado: NIL
+

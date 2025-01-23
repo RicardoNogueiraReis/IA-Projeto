@@ -229,3 +229,5 @@
     (imprime-tabuleiro tabuleiro)
   )
 )
+
+;; (teste-minimax)
