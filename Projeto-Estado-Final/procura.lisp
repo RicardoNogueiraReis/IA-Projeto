@@ -78,7 +78,8 @@
                             indiceColuna
                             tabuleiro)
           (substituir indiceLinha indiceColuna tabuleiro 0))))
-    (format t "Operador: índice linha ~a, coluna ~a, resultado ~a~%" indiceLinha indiceColuna resultado)
+    (format t "Operador: índice linha ~a, coluna ~a, resultado ~a~%"
+            indiceLinha indiceColuna resultado)
     resultado))
 
 

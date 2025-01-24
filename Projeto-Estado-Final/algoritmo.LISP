@@ -1,42 +1,40 @@
 ;;; algoritmo.lisp
 
 (defun valor (estado)
-  ;; Função de avaliação do estado do tabuleiro
+  "Função de avaliação do estado do tabuleiro.
+   Calcula a diferença entre as peças do jogador 1 e do jogador 2."
   (let ((pecas-jogador1 (reduce #'+ (first estado)))
         (pecas-jogador2 (reduce #'+ (second estado))))
     (- pecas-jogador1 pecas-jogador2)))
 
 (defun minimax-iterativo (estado profundidade-max alfa beta maximizando-jogador)
-  (let ((start-time (get-internal-real-time))
-        (stack (list (list estado 0 alfa beta maximizando-jogador))))
-    (loop while stack
-          for (estado profundidade alfa beta maximizando-jogador) = (pop stack)
-          do (progn
-               ;; Verificar limite de tempo
-               (when (> (- (get-internal-real-time) start-time) tempo-max)
-                 (format t "Tempo excedido~%")
-                 (return nil))
-               (if (or (tabuleiro-vaziop estado) (>= profundidade profundidade-max))
-                   (return (valor estado))
-                   (if maximizando-jogador
-                       (dolist (jogada (reverse (jogadas-validas estado)))
-                         (let ((novo-estado (aplicar-jogada estado jogada)))
-                           (if (null novo-estado)
-                               (format t "Erro: estado gerado por aplicar-jogada é nulo.~%")
-                             (push (list novo-estado (1+ profundidade) alfa beta (not maximizando-jogador)) stack))))
-                       (dolist (jogada (reverse (jogadas-validas estado)))
-                         (let ((novo-estado (aplicar-jogada estado jogada)))
-                           (push (list novo-estado (1+ profundidade) alfa beta t) stack)))))))))
+  "Implementação do Minimax com poda Alfa-Beta."
+  (if (or (tabuleiro-vaziop estado) (<= profundidade-max 0))
+      (valor estado)
+      (let ((melhor-valor (if maximizando-jogador -999999 999999)))
+        (dolist (jogada (jogadas-validas estado (if maximizando-jogador 0 1)))
+          (let ((novo-estado (aplicar-jogada estado jogada)))
+            (when novo-estado
+              (let ((valor (minimax-iterativo novo-estado (1- profundidade-max)
+                                              alfa beta (not maximizando-jogador))))
+                (if maximizando-jogador
+                    (setf melhor-valor (max melhor-valor valor)
+                          alfa (max alfa valor))
+                    (setf melhor-valor (min melhor-valor valor)
+                          beta (min beta valor)))
+                (when (>= alfa beta)
+                  (return melhor-valor))))))
+        melhor-valor)))
 
-
-(defun jogar (estado tempo)
-  (let ((jogadas-validas (jogadas-validas estado))
-        (melhor-valor -999999)
-        (melhor-jogada nil))
-    (dolist (jogada jogadas-validas)
-      (let ((novo-estado (aplicar-jogada estado jogada))
-            (valor-jogada (minimax-iterativo novo-estado 3 -999999 999999 nil)))  ;; Profundidade inicial pode ser ajustada conforme necessário
-        (when (> valor-jogada melhor-valor)
-          (setf melhor-valor valor-jogada)
-          (setf melhor-jogada jogada))))
-    (list melhor-jogada (aplicar-jogada estado melhor-jogada))))
+(defun jogar (estado profundidade-max)
+  "Executa o algoritmo Alfa-Beta e retorna a melhor jogada com o valor associado."
+  (let ((melhor-jogada nil)
+        (melhor-valor -999999))
+    (dolist (jogada (jogadas-validas estado 0))
+      (let ((novo-estado (aplicar-jogada estado jogada)))
+        (when novo-estado
+          (let ((valor (minimax-iterativo novo-estado profundidade-max -999999 999999 nil)))
+            (when (> valor melhor-valor)
+              (setf melhor-valor valor
+                    melhor-jogada jogada))))))
+    (list melhor-jogada melhor-valor)))

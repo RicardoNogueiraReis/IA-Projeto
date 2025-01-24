@@ -26,3 +26,57 @@ Resultado: NIL
 Algoritmo: NIL
 Resultado: NIL
 
+Algoritmo: NIL
+Resultado: NIL
+
+Algoritmo: ALFABETA
+Resultado: ((1 4) ((0 1 1 1 1 2) (0 0 0 0 0 0)))
+
+Algoritmo: DFS
+Resultado: NIL
+
+Algoritmo: ALFABETA
+Resultado: ((1 4) ((0 1 1 1 1 2) (0 0 0 0 0 0)))
+
+Algoritmo: ALFABETA
+Resultado: ((1 4) ((0 1 1 1 1 2) (0 0 0 0 0 0)))
+
+Algoritmo: ALFABETA
+Resultado: ((1 4) ((0 1 1 1 1 2) (0 0 0 0 0 0)))
+
+Algoritmo: ALFABETA
+Resultado: ((0 5) ((0 0 0 0 1 1) (0 0 0 0 4 0)))
+
+Algoritmo: ALFABETA
+Resultado: ((0 5) ((0 0 0 0 1 1) (0 0 0 0 4 0)))
+
+Algoritmo: ALFABETA
+Resultado: ((0 5) -3)
+----------------------
+Algoritmo: ALFABETA
+Resultado: ((0 5) -3)
+----------------------
+Algoritmo: ALFABETA
+Resultado: ((0 5) -3)
+----------------------
+Algoritmo: ALFABETA
+Resultado: ((0 0) 0)
+----------------------
+Algoritmo: ALFABETA
+Resultado: ((0 5) -2)
+----------------------
+Algoritmo: ALFABETA
+Resultado: ((0 1) 1)
+----------------------
+Algoritmo: ALFABETA
+Resultado: ((0 0) -52)
+----------------------
+Algoritmo: ALFABETA
+Resultado: ((0 0) -52)
+----------------------
+Algoritmo: ALFABETA
+Resultado: ((0 5) -3)
+----------------------
+Algoritmo: ALFABETA
+Resultado: ((0 5) -3)
+----------------------
