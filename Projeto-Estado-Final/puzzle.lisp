@@ -144,7 +144,10 @@
   (let* ((linha (first jogada))
          (coluna (second jogada))
          (pecas (celula linha coluna estado)))
-    (if (or (zerop pecas) (null estado))
+    (if (or 
+         (zerop pecas)
+         (null estado)
+        )
         estado
         (let (
               (novo-estado (percorrer-posicoes

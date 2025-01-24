@@ -5,6 +5,28 @@
 
 (defparameter *profundidade-maxima* 3) ;; Profundidade default Alfa-Beta
 
+(defun ler-problemas-recursivo (stream)
+  (let
+    ((problema (read stream nil nil)))
+
+    (cond
+     ( (not (null problema))
+      (cons problema (ler-problemas-recursivo stream))
+     )
+     ( t
+       nil
+     )
+    )
+  )
+)
+
+(defun ler-problemas (ficheiro)
+  "Lê todos os problemas do ficheiro .dat utilizando a recursão."
+  (with-open-file (stream ficheiro :direction :input)
+    (ler-problemas-recursivo stream)
+  )
+)
+
 (defun ler-tabuleiros ()
   (with-open-file (ficheiro "C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/Projeto-Estado-Final/problemas.dat"
                           :direction :input :if-does-not-exist :error)
