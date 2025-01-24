@@ -11,7 +11,7 @@
   (cria-no (tabuleiro-teste))
 )
 
-;;; Fun��es Seletores
+;;; Funcoes Seletores
 (defun no-estado (no)
   "Retorna o estado do n� (tabuleiro)."
   (first no)
@@ -151,7 +151,7 @@
   
 )
 
-;; Fun��es Auxiliares ao BFS
+;; Funcoes Auxiliares ao BFS
 
 (defun abertos-bfs (abertos nos-sucessores fechados)
 "Fun��o respons�vel por adicionar nos sucessores na lista de abertos de acordo com o algoritmo de procura em largura.

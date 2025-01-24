@@ -71,24 +71,15 @@
 #| Operador  ================================= |#
 
 (defun operador (indiceLinha indiceColuna &optional (tabuleiro (tabuleiro-teste)))
-  (cond
-    ( (or (null indiceLinha) (null indiceColuna))
-      nil
-    )
-    ( t
-      (percorrer-posicoes
-        (distribuir-pecas (celula indiceLinha indiceColuna tabuleiro)
-                          indiceLinha
-                          indiceColuna
-                          tabuleiro)
-        (substituir
-          indiceLinha
-          indiceColuna
-          tabuleiro 0)
-      )
-    )
-  )
-)
+  (let ((resultado
+         (percorrer-posicoes
+          (distribuir-pecas (celula indiceLinha indiceColuna tabuleiro)
+                            indiceLinha
+                            indiceColuna
+                            tabuleiro)
+          (substituir indiceLinha indiceColuna tabuleiro 0))))
+    (format t "Operador: índice linha ~a, coluna ~a, resultado ~a~%" indiceLinha indiceColuna resultado)
+    resultado))
 
 
 (defun jogadas ()
@@ -111,22 +102,15 @@
 ;; resultado: ???
 
 (defun novo-sucessor (no jogadas)
-  "Gera um novo sucessor com a heurï¿½stica calculada."
-  (cond
-   ( (null no)
-     nil
-   )
-   (t
-      (funcall #'cria-no
-               (operador (first jogadas) (second jogadas) (no-estado no)) 
-               (1+ (no-profundidade no))
-               (heuristica (no-estado no))
-               no  
-      )
-    )
-      
-   )
-)
+  (let ((novo-estado
+         (operador (first jogadas) (second jogadas) (no-estado no))))
+    (format t "Novo estado gerado no sucessor: ~a~%" novo-estado)
+    (if (null novo-estado)
+        (format t "Erro: operador gerou estado nulo para jogada ~a~%" jogadas))
+    (cria-no novo-estado
+             (1+ (no-profundidade no))
+             (heuristica novo-estado)
+             no)))
 
 
 ;; teste: (sucessores (no-teste) (operadores) 'bfs)

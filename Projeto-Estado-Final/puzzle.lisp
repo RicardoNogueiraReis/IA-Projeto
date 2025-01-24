@@ -217,20 +217,30 @@
 
 ;; FASE 2
 
+(defun jogadas-validas-aux (estado i j result)
+  (cond
+    ((>= j 2) (jogadas-validas-aux estado (1+ i) 0 result))
+    ((>= i (length (first estado))) result)
+    ((> (celula j i estado) 0) (jogadas-validas-aux estado i (1+ j) (cons (list j i) result)))
+    (t (jogadas-validas-aux estado i (1+ j) result))))
+
 (defun jogadas-validas (estado)
-  ;; Aqui, você deve implementar a lógica para determinar todas as jogadas válidas para o estado atual do tabuleiro.
-  (let (result (list))
-    (dotimes (i (length (first estado)))
-      (dotimes (j 2)
-        (if (> (celula j i estado) 0)
-            (push (list j i) result))))
-    (nreverse result)))
+  "Determina todas as jogadas válidas para o estado atual do tabuleiro."
+  (jogadas-validas-aux estado 0 0 nil))
 
 (defun aplicar-jogada (estado jogada)
-  ;; Implementação simplificada que altera o estado do tabuleiro conforme a jogada escolhida
   (let* ((linha (first jogada))
          (coluna (second jogada))
          (pecas (celula linha coluna estado)))
-    (if (zerop pecas)
-        estado  ;; Jogada inválida, retorna o mesmo estado
-        (percorrer-posicoes (distribuir-pecas pecas linha coluna estado) estado))))
+    (format t "Aplicar jogada: linha ~a coluna ~a pecas ~a~%" linha coluna pecas)
+    (cond
+      ((zerop pecas)
+       (format t "Jogada inválida (sem peças).~%")
+       estado)  ;; Jogada inválida, retorna o mesmo estado
+      (t
+       (let ((novo-estado
+              (percorrer-posicoes
+               (distribuir-pecas pecas linha coluna estado)
+               (substituir linha coluna estado 0))))
+         (format t "Novo estado gerado: ~a~%" novo-estado)
+         novo-estado)))))

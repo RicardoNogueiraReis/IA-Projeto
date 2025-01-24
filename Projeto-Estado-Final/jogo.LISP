@@ -1,70 +1,100 @@
-;;; jogo.lisp
+;;; algoritmo.lisp
 
-(load "C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/Projeto-Estado-Final/algoritmo.lisp")
-(load "C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/Projeto-Estado-Final/puzzle.lisp")
+(defparameter *profundidade-maxima* 3)  ;; Diminuímos a profundidade máxima para 3
 
-(defun ler-problemas-recursivo (stream)
-  "Lê recursivamente os problemas de um ficheiro aberto e devolve uma lista de tabuleiros."
-  (let ((problema (read stream nil nil)))
-    (if problema
-        (cons problema (ler-problemas-recursivo stream))
-        nil)))
+(defun valor (estado)
+  ;; Função de avaliação do estado do tabuleiro
+  (let ((pecas-jogador1 (reduce #'+ (first estado)))
+        (pecas-jogador2 (reduce #'+ (second estado))))
+    (- pecas-jogador1 pecas-jogador2)))
 
-(defun ler-problemas (ficheiro)
-  "Lê todos os problemas do ficheiro .dat utilizando a recursão."
-  (with-open-file (stream ficheiro :direction :input)
-    (ler-problemas-recursivo stream)))
+(defun minimax (estado profundidade alfa beta maximizando-jogador)
+  (if (or (tabuleiro-vaziop estado) (>= profundidade *profundidade-maxima*))
+      (valor estado)
+      (if maximizando-jogador
+          (minimax-max estado profundidade alfa beta)
+          (minimax-min estado profundidade alfa beta))))
 
-(defun mostrar-tabuleiros (tabuleiros)
-  "Mostra os tabuleiros numerados."
-  (loop for tabuleiro in tabuleiros
-        for index from 0
-        do (format t "~d: ~a~%" (1+ index) tabuleiro)))
+(defun minimax-max (estado profundidade alfa beta)
+  (minimax-max-aux estado (1+ profundidade) alfa beta -999999 (jogadas-validas estado)))
 
-(defun escolher-tabuleiro (tabuleiros)
-  "Mostra os tabuleiros e permite ao utilizador escolher um."
-  (mostrar-tabuleiros tabuleiros)
-  (nth (1- (read)) tabuleiros))
+(defun minimax-max-aux (estado profundidade alfa beta valor-max jogadas)
+  (if (null jogadas)
+      valor-max
+      (let* ((jogada (car jogadas))
+             (novo-estado (aplicar-jogada estado jogada))
+             (novo-valor (minimax novo-estado profundidade alfa beta nil)))
+        (if (>= (max valor-max novo-valor) beta)
+            (max valor-max novo-valor)
+            (minimax-max-aux estado profundidade (max alfa novo-valor) beta (max valor-max novo-valor) (cdr jogadas))))))
 
-(defun ler-algoritmo ()
-  "Permite escolher o algoritmo de procura a utilizar."
-  (format t "Que algoritmo quer usar para procurar? ~%")
-  (format t "1- Procura na largura (BFS)~%")
-  (format t "2- Procura na profundidade (DFS)~%")
-  (format t "3- Procura do Melhor Primeiro (A*)~%")
-  (format t "4- AlfaBeta~%")
-  (case (read)
-    (1 'bfs)
-    (2 'dfs)
-    (3 'a*)
-    (4 'alfabeta)))
+(defun minimax-min (estado profundidade alfa beta)
+  (minimax-min-aux estado (1+ profundidade) alfa beta 999999 (jogadas-validas estado)))
 
-(defun ler-profundidade ()
-  "Pergunta a profundidade limite para DFS."
-  (format t "Qual a profundidade limite para o DFS?~%")
-  (read))
+(defun minimax-min-aux (estado profundidade alfa beta valor-min jogadas)
+  (if (null jogadas)
+      valor-min
+      (let* ((jogada (car jogadas))
+             (novo-estado (aplicar-jogada estado jogada))
+             (novo-valor (minimax novo-estado profundidade alfa beta t)))
+        (if (<= (min valor-min novo-valor) alfa)
+            (min valor-min novo-valor)
+            (minimax-min-aux estado profundidade alfa (min beta novo-valor) (min valor-min novo-valor) (cdr jogadas))))))
 
-(defun escrever-log (resultado algoritmo)
-  "Escreve os resultados da procura no arquivo log.dat."
-  (with-open-file (stream "C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/Projeto-Estado-Final/log.dat" :direction :output :if-exists :append)
-    (format stream "Algoritmo: ~a~%Resultado: ~a~%~%" algoritmo resultado)))
+(defun jogar (estado tempo)
+  (jogar-aux estado (jogadas-validas estado) -999999 nil))
 
-(defun executar-procura (algoritmo tabuleiro profundidade)
-  "Executa o algoritmo de procura correspondente, exibe a solução e retorna o resultado."
-  (let ((resultado (case algoritmo
-                     (bfs (bfs #'no-solucaop #'sucessores (jogadas) (list (cria-no tabuleiro))))
-                     (dfs (dfs #'no-solucaop #'sucessores (jogadas) profundidade (list (cria-no tabuleiro))))
-                     (a* (a* #'no-solucaop #'sucessores-heuristica (jogadas) #'heuristica (list (cria-no tabuleiro))))
-                     (alfabeta (jogar tabuleiro 20)))))
-    (mostrar-solucao resultado)
-    resultado))
+(defun jogar-aux (estado jogadas melhor-valor melhor-jogada)
+  (if (null jogadas)
+      (list melhor-jogada (aplicar-jogada estado melhor-jogada))
+      (let* ((jogada (car jogadas))
+             (novo-estado (aplicar-jogada estado jogada))
+             (valor-jogada (minimax novo-estado 1 -999999 999999 nil)))  ;; Inicia com profundidade 1
+        (if (> valor-jogada melhor-valor)
+            (jogar-aux estado (cdr jogadas) valor-jogada jogada)
+            (jogar-aux estado (cdr jogadas) melhor-valor melhor-jogada)))))
 
 (defun iniciar ()
-  "Permite iniciar o programa, lendo o tabuleiro, o algoritmo e executando a procura."
-  (let* ((tabuleiros (ler-problemas "C:/Users/rodri/Desktop/Eng.Info/IA/IA-Projeto/Projeto-Estado-Final/problemas.dat"))
-         (tabuleiro (escolher-tabuleiro tabuleiros))
-         (algoritmo (ler-algoritmo))
-         (profundidade (if (eql algoritmo 'dfs) (ler-profundidade) nil))
-         (resultado (executar-procura algoritmo tabuleiro profundidade)))
-    (escrever-log resultado algoritmo)
-    resultado))
+  (let ((tabuleiros '(((0 0 0 0 0 2) (0 0 0 0 4 0))
+                      ((2 2 2 2 2 2) (2 2 2 2 2 2))
+                      ((0 3 0 3 0 3) (3 0 3 0 3 0))
+                      ((1 2 3 4 5 6) (6 5 4 3 2 1))
+                      ((2 4 6 8 10 12) (12 10 8 6 4 2))
+                      ((48 0 0 0 0 0) (0 0 0 0 0 48))
+                      ((8 8 8 8 8 8) (8 8 8 8 8 8))
+                      ((1 8 8 5 8 7) (3 8 6 3 8 2)))))
+    (format t "Selecione um tabuleiro inicial:~%")
+    (loop for tabuleiro in tabuleiros
+          for index from 1
+          do (format t "~a: ~a~%" index tabuleiro))
+    (let ((escolha-tabuleiro (read)))
+      (if (and (integerp escolha-tabuleiro)
+               (>= escolha-tabuleiro 1)
+               (<= escolha-tabuleiro (length tabuleiros)))
+          (let ((estado-inicial (nth (1- escolha-tabuleiro) tabuleiros)))
+            (format t "Que algoritmo quer usar para procurar?~%")
+            (format t "1- Procura na largura (BFS)~%")
+            (format t "2- Procura na profundidade (DFS)~%")
+            (format t "3- Procura do Melhor Primeiro (A*)~%")
+            (format t "4- Algoritmo Alfa-Beta~%") ; Adicionada a opção Alfa-Beta
+            (let ((escolha-algoritmo (read)))
+              (cond
+                ((= escolha-algoritmo 1)
+                 (format t "Executando BFS...~%")
+                 ;; Adicione a chamada para a função BFS aqui
+                 )
+                ((= escolha-algoritmo 2)
+                 (format t "Executando DFS...~%")
+                 ;; Adicione a chamada para a função DFS aqui
+                 )
+                ((= escolha-algoritmo 3)
+                 (format t "Executando A*...~%")
+                 ;; Adicione a chamada para a função A* aqui
+                 )
+                ((= escolha-algoritmo 4)
+                 (format t "Executando Alfa-Beta...~%")
+                 ;; Adicione a chamada para o algoritmo Alfa-Beta aqui
+                 (jogar estado-inicial 5000)) ; Exemplo: passando 5000ms como limite de tempo
+                (t
+                 (format t "Opção inválida.~%")))))
+          (format t "Opção de tabuleiro inválida.~%")))))
