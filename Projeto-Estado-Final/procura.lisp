@@ -3,7 +3,7 @@
 #| Tipo abstrato de dados ====================== |#
 
 (defun cria-no (tabuleiro &optional (g 0) (h (heuristica tabuleiro)) (pai nil))
-  "Cria um nï¿½ com estado do tabuleiro, profundidade (g), heurï¿½stica e ponteiro para o nï¿½ pai."
+  "Cria um nó com estado do tabuleiro, profundidade (g), heuristica e ponteiro para o nó pai."
   (list tabuleiro g h pai)
 )
 
@@ -13,27 +13,27 @@
 
 ;;; Funcoes Seletores
 (defun no-estado (no)
-  "Retorna o estado do nï¿½ (tabuleiro)."
+  "Retorna o estado do nó (tabuleiro)."
   (first no)
 )
 
 (defun no-profundidade (no)
-  "Retorna a profundidade do nï¿½ (g)."
+  "Retorna a profundidade do nó (g)."
   (second no)
 )
 
 (defun no-heuristica (no)
-  "Retorna o valor da heurï¿½stica do nï¿½."
+  "Retorna o valor da heuristica do nó."
   (third no)
 )
 
 (defun no-custo (no)
-  "Calcula o custo do nï¿½ (profundidade + heurï¿½stica)."
+  "Calcula o custo do nó (profundidade + heuristica)."
   (+ (no-profundidade no) (no-heuristica no))
 )
 
 (defun no-pai (no)
-  "Retorna o nï¿½ pai."
+  "Retorna o nó pai."
   (fourth no)
 )
 
@@ -45,8 +45,8 @@
 
  
 (defun escreve-no (no)
-  "Escreve no terminal o estado, profundidade, heurï¿½stica e custo do nï¿½."
-  (format t "| Estado: ~a | Profundidade: ~a | Heurï¿½stica: ~a | Custo: ~a | Pai: ~a~%"
+  "Escreve no terminal o estado, profundidade, heuristica e custo do nó."
+  (format t "| Estado: ~a | Profundidade: ~a | Heuristica: ~a | Custo: ~a | Pai: ~a~%"
           (no-estado no)
           (no-profundidade no)
           (no-heuristica no)
@@ -56,7 +56,7 @@
 )
 
 (defun escreve-lista-nos (lista)
-  "Escreve no terminal uma lista de nï¿½s."
+  "Escreve no terminal uma lista de nós."
   (cond
     ( (null lista)
       nil
@@ -139,7 +139,7 @@
 ;; Funcoes Auxiliares ao BFS
 
 (defun abertos-bfs (abertos nos-sucessores fechados)
-"Funï¿½ï¿½o responsï¿½vel por adicionar nos sucessores na lista de abertos de acordo com o algoritmo de procura em largura.
+"Funóï¿½o responsï¿½vel por adicionar nos sucessores na lista de abertos de acordo com o algoritmo de procura em largura.
 Verifica se jï¿½ existe um dos na lista de abertos e na lista de fechados."
   (cond
      ( (null nos-sucessores) abertos)
@@ -231,18 +231,18 @@ Verifica se jï¿½ existe um dos na lista de abertos e na lista de fechados."
         (
           (n (car abertos))
 
-           ; Expande o nï¿½ n, Colocar os sucessores no fim de ABERTOS, 
+           ; Expande o nó n, Colocar os sucessores no fim de ABERTOS, 
            ; colocando os ponteiros para n. (novo-sucessor)
           (nos-sucessores (remove nil (funcall funcaoSucessores n jogadas "bfs")))
 
           ;; (a (print nos-sucessores))
-           ; Remove o primeiro nï¿½ de ABERTOS e coloca os sucessores no fim da lista de abertos
+           ; Remove o primeiro nó de ABERTOS e coloca os sucessores no fim da lista de abertos
           (novos-abertos (remove nil (abertos-bfs (cdr abertos) nos-sucessores fechados)))
 
            ; e coloca-o em FECHADOS
           (novos-fechados (cons n fechados))
 
-           ; verifica se existe um nï¿½ objetivo
+           ; verifica se existe um nó objetivo
           (no-objetivo (retorna-no-objetivo nos-sucessores funcaoObjetivo))
         )
         (cond
@@ -276,18 +276,18 @@ Verifica se jï¿½ existe um dos na lista de abertos e na lista de fechados."
         (
           (n (car abertos))
 
-           ; Expande o nï¿½, colocar os sucessores no fim de ABERTOS, 
+           ; Expande o nó, colocar os sucessores no fim de ABERTOS, 
            ; colocando os ponteiros para n. (novo-sucessor)
           (nos-sucessores (remove nil (funcall funcaoSucessores n jogadas "dfs" profundidadeMax)))
 
            ;; (a (print nos-sucessores))
-           ; Remove o primeiro nï¿½ de ABERTOS e coloca os sucessores no fim da lista de abertos
+           ; Remove o primeiro nó de ABERTOS e coloca os sucessores no fim da lista de abertos
           (novos-abertos (remove nil (abertos-dfs (cdr abertos) nos-sucessores fechados)))
 
            ; e coloca-o em FECHADOS
           (novos-fechados (cons n fechados))
 
-           ; verifica se existe um nï¿½ objetivo
+           ; verifica se existe um nó objetivo
           (no-objetivo (retorna-no-objetivo nos-sucessores funcaoObjetivo))
         )
         (cond
@@ -309,7 +309,7 @@ Verifica se jï¿½ existe um dos na lista de abertos e na lista de fechados."
 ;;; A*
 
 (defun novo-sucessor-heuristica (no jogada)
-  "Gera um novo sucessor com a heurï¿½stica calculada."
+  "Gera um novo sucessor com a heuristica calculada."
   (cond
    ( (null no)
      nil
@@ -326,7 +326,7 @@ Verifica se jï¿½ existe um dos na lista de abertos e na lista de fechados."
 )
 
 (defun sucessores-heuristica (no jogadas funcao-heuristica heuristica-no-inicial)
-  "Gera a lista de sucessores para um nï¿½, aplicando corretamente a heurï¿½stica e gravando a referï¿½ncia ao nï¿½ pai."
+  "Gera a lista de sucessores para um nó, aplicando corretamente a heuristica e gravando a referencia ao nó pai."
   (cond
     ((null jogadas) nil)
     (t
@@ -353,7 +353,7 @@ Verifica se jï¿½ existe um dos na lista de abertos e na lista de fechados."
 )
 
 (defun ordenar-nos (lista-nos)
-  "Ordena uma lista de nï¿½s pelo custo (profundidade + heurï¿½stica)."
+  "Ordena uma lista de nós pelo custo (profundidade + heuristica)."
   (sort lista-nos #'(lambda (n1 n2)
                       ( < (no-custo n1) (no-custo n2)) )
   )
@@ -380,14 +380,14 @@ Verifica se jï¿½ existe um dos na lista de abertos e na lista de fechados."
   )
 )
 
-;; O - nï¿½mero de peï¿½as a capturar no tabuleiro 
+;; O - nómero de peças a capturar no tabuleiro 
 (defun o (no-estado)
   (+ (o-aux (first no-estado)) (o-aux (second no-estado)) )
 )
 
-;; Nï¿½mero de peï¿½as a capturar, peï¿½as do tabuleiro inicial - peï¿½as atuais
+;; Nómero de peças a capturar, peças do tabuleiro inicial - peças atuais
 
-;; C - nï¿½mero de peï¿½as jï¿½ capturadas no tabuleiro 
+;; C - nómero de peças jï¿½ capturadas no tabuleiro 
 (defun c (estado-no numero-pecas-iniciais )
   (-
     numero-pecas-iniciais
@@ -413,29 +413,29 @@ Verifica se jï¿½ existe um dos na lista de abertos e na lista de fechados."
      (let*
        (
          
-         (n (car abertos))  ;; Pega o nï¿½ atual para expandir
-         ;; Incrementa o contador de nï¿½s expandidos
+         (n (car abertos))  ;; Pega o nó atual para expandir
+         ;; Incrementa o contador de nós expandidos
          (nos-expandidos-novos (1+ nos-expandidos))
 
-         ;; Gerar sucessores do nï¿½ atual
+         ;; Gerar sucessores do nó atual
          (nos-sucessores (remove nil (funcall funcao-sucessores n jogadas funcao-heuristica numero-pecas-iniciais)))
 
          ;; Filtra sucessores redundantes
          (nos-filtrados
            (remove-if #'(lambda (sucessor) (no-redundante-p sucessor fechados)) nos-sucessores))
 
-         ;; Incrementa o contador de nï¿½s gerados
+         ;; Incrementa o contador de nós gerados
          (nos-gerados-novos (+ nos-gerados (length nos-filtrados))) ;; Incrementa com base nos sucessores vï¿½lidos
 
          ;; Adiciona sucessores a "abertos"
          (novos-abertos (colocar-sucessores-em-abertos (cdr abertos) nos-filtrados))
          (novos-fechados (cons n fechados)) ;; Atualiza lista de fechados
 
-         ;; Verifica se algum dos sucessores ï¿½ uma soluï¿½ï¿½o
+         ;; Verifica se algum dos sucessores ï¿½ uma solução
          (no-objetivo (retorna-no-objetivo nos-sucessores funcaoObjetivo)) ;; Verifica se algum sucessor ï¿½ objetivo
        )
 
-       ;; Verifica se o nï¿½ atual ï¿½ soluï¿½ï¿½o
+       ;; Verifica se o nó atual ï¿½ solução
        (cond
          ( (not (null no-objetivo))
             no-objetivo
