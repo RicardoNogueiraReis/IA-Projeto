@@ -80,3 +80,18 @@ Resultado: ((0 5) -3)
 Algoritmo: ALFABETA
 Resultado: ((0 5) -3)
 ----------------------
+Algoritmo: ALFABETA
+Resultado: ((0 5) -3)
+----------------------
+Algoritmo: NIL
+Resultado: NIL
+
+Algoritmo: NIL
+Resultado: NIL
+
+Algoritmo: ALFABETA
+Resultado: ((0 5) 999999)
+----------------------
+Algoritmo: ALFABETA
+Resultado: ((0 0) 999999)
+----------------------
